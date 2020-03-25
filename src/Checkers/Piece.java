@@ -1,16 +1,15 @@
-import javafx.scene.effect.Light;
+package Checkers;
 
 class Piece {
     private int x;
     private int y;
-    private Color color;
+
     private boolean isQueen;
 
-    Piece(int x, int y, boolean isWhite){
+    Piece(int x, int y){
         this.isQueen = false;
         this.x = x;
         this.y = y;
-        this.color = isWhite ? Color.WHITE: Color.BLACK;
     }
 
     int getX() {
@@ -29,7 +28,7 @@ class Piece {
         this.isQueen = true;
     }
 
-    public boolean isQueen() {
+    boolean isQueen() {
         return isQueen;
     }
 }

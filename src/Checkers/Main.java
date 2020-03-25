@@ -1,3 +1,5 @@
+package Checkers;
+
 import cz.gyarab.util.light.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -234,7 +236,7 @@ public class Main {
             //System.out.println("x: "+piece.getX());
             //System.out.println("y: "+piece.getY());
         }
-       // for(Move m:whitePlayer.allLegalMoves){
+       // for(Checkers.Move m:whitePlayer.allLegalMoves){
        //     matrix.setColor(m.xTo,m.yTo,LightColor.GREEN);
        // }
 

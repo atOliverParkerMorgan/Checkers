@@ -1,7 +1,9 @@
+package Checkers;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player {
+class Player {
 
     private boolean isWhite;
     private Color color;
@@ -30,13 +32,13 @@ public class Player {
         if(isWhite){
             for (int row = 0; row < this.numberOfPieces/4; row++) {
                 for (int column = row % 2; column < game.matrix.getWidth(); column += 2) {
-                    allPieces.add(new Piece(column, row, isWhite));
+                    allPieces.add(new Piece(column, row));
                 }
             }
         }else {
             for (int row = game.matrix.getHeight() - 1; row >= game.matrix.getHeight() - numberOfPieces / 4; row--) {
                 for (int column = row % 2; column < game.matrix.getWidth(); column += 2) {
-                    allPieces.add(new Piece(column, row, isWhite));
+                    allPieces.add(new Piece(column, row));
                 }
             }
         }
@@ -92,11 +94,11 @@ public class Player {
         Opponent = opponent;
     }
 
-    public Player getOpponent(){
+    Player getOpponent(){
         return Opponent;
     }
 
-    public void setAllLegalMoves(List<Move> allLegalMoves) {
-        this.allLegalMoves = allLegalMoves;
-    }
+    //public void setAllLegalMoves(List<Move> allLegalMoves) {
+    //    this.allLegalMoves = allLegalMoves;
+    //}
 }

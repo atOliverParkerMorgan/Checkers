@@ -1,10 +1,12 @@
+package Checkers;
+
 import cz.gyarab.util.light.*;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game {
+class Game {
 
     Matrix matrix;
     Player whitePlayer;
@@ -65,11 +67,9 @@ public class Game {
         this.currentPlayer = whitePlayer;
 
     }
-     void EndGame(){
-        this.gameHasEnded = true;
-     }
 
-    public boolean isGameHasEnded() {
+
+    boolean isGameHasEnded() {
         return gameHasEnded;
     }
 }

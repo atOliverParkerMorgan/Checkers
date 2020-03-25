@@ -1,4 +1,6 @@
-public class Move {
+package Checkers;
+
+class Move {
     int xFrom;
     int yFrom;
     int xTo;

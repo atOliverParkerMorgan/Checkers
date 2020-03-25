@@ -1,3 +1,5 @@
+package Checkers;
+
 import cz.gyarab.util.light.LightColor;
 
 public enum Color {
@@ -5,8 +7,8 @@ public enum Color {
     private final LightColor color;
 
     // I solve the problem differently (I don't need a direction in enum)
-    Color(LightColor barva) {
-        this.color = barva;
+    Color(LightColor color) {
+        this.color = color;
 
     }
 

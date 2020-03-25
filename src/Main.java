@@ -134,51 +134,100 @@ public class Main {
 
         for (Piece piece: player.getAllPieces()) {
 
-            // calculating queen move
-            int loopOver = 1;
+
             if(piece.isQueen()){
-                loopOver = 2;
-            }
+                for (int i = 0; i < 4; i++) {
+                    int addX;
+                    int addY;
+                    if(i==0){
+                        addX = 1;
+                        addY = 1;
+                    }else if(i==1){
+                        addX = -1;
+                        addY = 1;
+                    }else if(i==2){
+                        addX = 1;
+                        addY = -1;
+                    }else {
+                        addX = -1;
+                        addY = -1;
+                    }
 
-            for (int i = 0; i < loopOver; i++) {
+                    int currentX = piece.getX();
+                    int currentY = piece.getY();
+                    currentX = currentX + addX;
+                    currentY = currentY + addY;
 
-                // move logic
-                if (piece.getX() + 1 <= 7 && yDir + piece.getY() <= 7 && yDir + piece.getY() >= 0) {
-                    if (game.matrix.isOff(piece.getX() + 1, piece.getY() + yDir)) {
-                        player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() + 1, piece.getY() + yDir));
-                    } else {
-                        if (piece.getX() + 2 <= 7 && 2 * yDir + piece.getY() <= 7 && 2 * yDir + piece.getY() >= 0) {
-                            if (game.matrix.getColor(piece.getX() + 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
-                                    game.matrix.isOff(piece.getX() + 2, piece.getY() + 2 * yDir)) {
-                                player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() + 2, piece.getY() + 2 * yDir));
+                    while (currentX <= 7 && currentX >= 0 && currentY <= 7 && currentY >= 0) {
+                        if(game.matrix.isOff(currentX,currentY)){
+                            player.allLegalMoves.add(new Move(piece.getX(),piece.getY(),currentX,currentY,false));
+                        }else {
+                            if(!game.matrix.getColor(currentX,currentY).equals(player.getColor().getColor())) {
+                                if(currentX < 7 && currentX > 0 && currentY < 7 && currentY > 0) {
 
+                                    if(game.matrix.getColor(currentX + addX , currentY + addY ) == null) {
+                                        player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), currentX + addX, currentY + addY, true));
+                                    }
+                                }
                             }
+
+                            break;
                         }
+
+                        currentX = currentX + addX;
+                        currentY = currentY + addY;
+
                     }
                 }
 
-                if (piece.getX() - 1 >= 0 && yDir + piece.getY() <= 7 && yDir + piece.getY() >= 0) {
-                    if (game.matrix.isOff(piece.getX() - 1, piece.getY() + yDir)) {
-                        player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() - 1, piece.getY() + yDir));
-                    } else {
-                        if (piece.getX() - 2 >= 0 && 2 * yDir + piece.getY() <= 7 && 2 * yDir + piece.getY() >= 0) {
-                            if (game.matrix.getColor(piece.getX() - 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
-                                    game.matrix.isOff(piece.getX() - 2, piece.getY() + 2 * yDir)) {
-                                player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() - 2, piece.getY() + 2 * yDir));
 
-                            }
-                        }
-                    }
-                }
-                // adding possible moves behind the queen
-                if (loopOver == 2) {
-                    yDir *= -1;
-                }
-            }
-            if(isWhite){
-                yDir = 1;
+
             }else {
-                yDir = -1;
+                // calculating behind moves
+                int loopOver = 2;
+
+                for (int i = 0; i < loopOver; i++) {
+
+                    // move logic
+                    if (piece.getX() + 1 <= 7 && yDir + piece.getY() <= 7 && yDir + piece.getY() >= 0) {
+                        if (game.matrix.isOff(piece.getX() + 1, piece.getY() + yDir)) {
+                            if (i != 1) {
+                                player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() + 1, piece.getY() + yDir, false));
+                            }
+                        } else {
+                            if (piece.getX() + 2 <= 7 && 2 * yDir + piece.getY() <= 7 && 2 * yDir + piece.getY() >= 0) {
+                                if (game.matrix.getColor(piece.getX() + 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
+                                        game.matrix.isOff(piece.getX() + 2, piece.getY() + 2 * yDir)) {
+                                    player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() + 2, piece.getY() + 2 * yDir, true));
+
+                                }
+                            }
+                        }
+                    }
+
+                    if (piece.getX() - 1 >= 0 && yDir + piece.getY() <= 7 && yDir + piece.getY() >= 0) {
+                        if (game.matrix.isOff(piece.getX() - 1, piece.getY() + yDir)) {
+                            if (i != 1) {
+                                player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() - 1, piece.getY() + yDir, false));
+                            }
+                        } else {
+                            if (piece.getX() - 2 >= 0 && 2 * yDir + piece.getY() <= 7 && 2 * yDir + piece.getY() >= 0) {
+                                if (game.matrix.getColor(piece.getX() - 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
+                                        game.matrix.isOff(piece.getX() - 2, piece.getY() + 2 * yDir)) {
+                                    player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() - 2, piece.getY() + 2 * yDir, true));
+
+                                }
+                            }
+                        }
+                    }
+                    yDir *= -1;
+
+                }
+                if (isWhite) {
+                    yDir = 1;
+                } else {
+                    yDir = -1;
+                }
             }
 
 
@@ -217,27 +266,30 @@ public class Main {
     private static List<Move> move(Move move) {
         Piece movingPiece = game.currentPlayer.getPiece(move.xFrom, move.yFrom);
         movingPiece.setXY(move);
-        if(move.isDouble()) {
+        if(move.hasTaken) {
 
             if(move.yFrom<move.yTo){
                 if(move.xFrom<move.xTo) {
-                    game.currentPlayer.removePieceFromOpponent(move.xFrom + 1, move.yFrom + 1);
+                    game.currentPlayer.removePieceFromOpponent(move.xTo - 1, move.yTo - 1);
                 }else{
-                    game.currentPlayer.removePieceFromOpponent(move.xFrom - 1, move.yFrom + 1);
+                    game.currentPlayer.removePieceFromOpponent(move.xTo + 1, move.yTo - 1);
                 }
             }else {
                 if(move.xFrom<move.xTo) {
-                    game.currentPlayer.removePieceFromOpponent(move.xFrom + 1, move.yFrom - 1);
+                    game.currentPlayer.removePieceFromOpponent(move.xTo - 1, move.yTo + 1);
                 }else{
-                    game.currentPlayer.removePieceFromOpponent(move.xFrom - 1, move.yFrom - 1);
+                    game.currentPlayer.removePieceFromOpponent(move.xTo + 1, move.yTo + 1);
                 }
 
             }
+            updateBoard();
             getLegalMoves(game.currentPlayer.isWhite());
             List<Move> legalMovesOfPiece = game.currentPlayer.getLegalMovesOfPiece(movingPiece);
             List<Move> filteredLegalMoves = new ArrayList<>();
+
             for (Move value : legalMovesOfPiece) {
-                if (value.isDouble()) {
+
+                if (value.hasTaken && move.xFrom!=value.xFrom && move.yTo!=value.yTo) {
                     filteredLegalMoves.add(value);
                 }
             }

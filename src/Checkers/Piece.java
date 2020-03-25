@@ -1,6 +1,6 @@
 package Checkers;
 
-class Piece {
+public class Piece {
     private int x;
     private int y;
 

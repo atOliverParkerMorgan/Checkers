@@ -69,7 +69,7 @@ public class Main {
         }
     }
 
-     private static void endTurn(){
+     public static void endTurn(){
         updateBoard();
         switchPlayers();
         getLegalMoves(game.currentPlayer.isWhite());
@@ -265,7 +265,7 @@ public class Main {
 
     }
 
-    private static List<Move> move(Move move) {
+    public static List<Move> move(Move move) {
         Piece movingPiece = game.currentPlayer.getPiece(move.xFrom, move.yFrom);
         movingPiece.setXY(move);
         if(move.hasTaken) {

@@ -3,11 +3,11 @@ package Checkers;
 import java.util.ArrayList;
 import java.util.List;
 
-class Player {
+public class Player {
 
     private boolean isWhite;
     private Color color;
-    private int numberOfPieces;
+    private final int numberOfPieces;
     private Player Opponent;
     private List<Piece> allPieces;
      List<Move> allLegalMoves;
@@ -48,7 +48,7 @@ class Player {
         return isWhite;
     }
 
-    List<Piece> getAllPieces() {
+    public List<Piece> getAllPieces() {
         return allPieces;
     }
 
@@ -96,6 +96,10 @@ class Player {
 
     Player getOpponent(){
         return Opponent;
+    }
+
+    public List<Move> getAllLegalMoves() {
+        return allLegalMoves;
     }
 
     //public void setAllLegalMoves(List<Move> allLegalMoves) {

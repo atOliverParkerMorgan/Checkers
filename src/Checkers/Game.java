@@ -3,10 +3,11 @@ package Checkers;
 import cz.gyarab.util.light.*;
 
 import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-class Game {
+public class Game implements Serializable {
 
     Matrix matrix;
     Player whitePlayer;
@@ -71,5 +72,32 @@ class Game {
 
     boolean isGameHasEnded() {
         return gameHasEnded;
+    }
+
+    // !!! not my code, copied from the internet !!!
+    public Game copy() {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            return (Game) ois.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public Player getWhitePlayer() {
+        return whitePlayer;
+    }
+
+    public Player getBlackPlayer() {
+        return blackPlayer;
     }
 }

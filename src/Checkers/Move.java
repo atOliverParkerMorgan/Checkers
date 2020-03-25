@@ -1,6 +1,6 @@
 package Checkers;
 
-class Move {
+public final class Move {
     int xFrom;
     int yFrom;
     int xTo;
@@ -14,7 +14,7 @@ class Move {
         this.yTo = yTo;
         this.hasTaken = hasTaken;
     }
-    Move(int xFrom, int yFrom){
+    public Move(int xFrom, int yFrom){
         this.xFrom = xFrom;
         this.yFrom = yFrom;
         this.xTo = -1;

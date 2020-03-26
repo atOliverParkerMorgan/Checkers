@@ -1,14 +1,102 @@
 package Checkers;
 
+import AI.MiniMax;
 import cz.gyarab.util.light.*;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.ImageObserver;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
+    private boolean playerVsPlayer = false;
+    private MiniMax miniMax = new MiniMax(1);
+    private boolean playerVsAI = false;
+    private boolean AIVsAI = false;
+
     private  static Game game;
+    private Matrix menuMatrix = Matrix.createMatrix(3, 3);
     private Main() {
+
         game = new Game();
+        // Menu
+        menuMatrix.setLightPanelFactory(new LightPanelFactory() {
+            @Override
+            public LightPanel createLightPanel(BasicLightMatrix matrix, String title) {
+                return new SwingLightPanel(matrix,"Checkers - Menu"){
+
+
+                    @Override
+                    protected void paintLight(Graphics g, Rectangle rect, int col, int row, LightColor color, LightColor background) {
+                        super.paintLight(g, rect, col, row, color, background);
+                        if(menuMatrix.getColor(col, row).equals(LightColor.GREEN)){
+                            try {
+                                Image image = ImageIO.read(new File(System.getProperty("user.dir")+"\\src\\Checkers\\Images\\PlayerVsPlayer.png"));
+                                ImageObserver imageObserver = (image1, i, i1, i2, i3, i4) -> false;
+
+                                g.drawImage(image,rect.x, rect.y, imageObserver);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }else if(menuMatrix.getColor(col, row).equals(LightColor.LIGHT_GRAY)){
+                            try {
+                                Image image = ImageIO.read(new File(System.getProperty("user.dir")+"\\src\\Checkers\\Images\\PlayerVsAI.png"));
+                                ImageObserver imageObserver = (image12, i, i1, i2, i3, i4) -> false;
+
+                                g.drawImage(image,rect.x, rect.y, imageObserver);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }else if(menuMatrix.getColor(col, row).equals(LightColor.DARK_GRAY)){
+                            try {
+                                Image image = ImageIO.read(new File(System.getProperty("user.dir")+"\\src\\Checkers\\Images\\AIVsAI.png"));
+                                ImageObserver imageObserver = (image13, i, i1, i2, i3, i4) -> false;
+                                g.drawImage(image,rect.x, rect.y, imageObserver);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                };
+
+
+            }
+        });
+        menuMatrix.showWindow();
+        menuMatrix.setBackground(LightColor.WHITE);
+        menuMatrix.setColor(1,2,LightColor.GREEN);
+        menuMatrix.setColor(1,1,LightColor.LIGHT_GRAY);
+        menuMatrix.setColor(1,0,LightColor.DARK_GRAY);
+        menuMatrix.getInteractiveLightPanel().setUserSelectionMode(
+                InteractiveLightPanel.UserSelectionMode.PRESS);
+       menuMatrix.getInteractiveLightPanel().setSelectionVisible(true);
+       menuMatrix.getInteractiveLightPanel().addSelectListener(event -> {
+           if(event.getCol()==1){
+               menuMatrix.hideWindow();
+               menuMatrix = null;
+               if(event.getRow()==2){
+                   game.matrix.showWindow();
+                   playerVsPlayer = true;
+               }else if(event.getRow()==1){
+                   game.matrix.showWindow();
+                   playerVsAI = true;
+               }else if(event.getRow()==0){
+                   game.matrix.showWindow();
+                   AIVsAI = true;
+               }
+           }
+
+
+
+        });
+
+
+
 
         boardColors();
         updateBoard();
@@ -19,44 +107,94 @@ public class Main {
                 InteractiveLightPanel.UserSelectionMode.PRESS);
         game.matrix.getInteractiveLightPanel().setSelectionVisible(true);
         game.matrix.getInteractiveLightPanel().addSelectListener(event -> {
-            if(!game.isGameHasEnded()) {
-                updateBoard();
-                boardColors();
+            if(playerVsPlayer) {
+
+                if (!game.isGameHasEnded()) {
+                    updateBoard();
+                    boardColors();
 
 
-                if (event.getCol() < 0) {
-                    return;
-                }
-                if (event.getRow() < 0) {
-                    return;
-                }
-                LightColor lc = game.matrix.getColor(event.getCol(), event.getRow());
+                    if (event.getCol() < 0) {
+                        return;
+                    }
+                    if (event.getRow() < 0) {
+                        return;
+                    }
+                    LightColor lc = game.matrix.getColor(event.getCol(), event.getRow());
 
 
-                if (lc == null) {
+                    if (lc == null) {
 
-                    for (int i = 0; i < game.UI_moves.size(); i++) {
+                        for (int i = 0; i < game.UI_moves.size(); i++) {
 
-                        if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
-                            game.UI_moves.get(i).setFromPosition(game.lastMove);
-                            game.currentPlayer.allLegalMoves = move(game.UI_moves.get(i), game);
-                            if (null != game.currentPlayer.allLegalMoves) {
-                                if (game.currentPlayer.allLegalMoves.size() != 0) {
-                                    updateBoard();
-                                    showHint(event.getRow(), event.getCol(), true);
+                            if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
+                                game.UI_moves.get(i).setFromPosition(game.lastMove);
+                                game.currentPlayer.allLegalMoves = move(game.UI_moves.get(i), game);
+                                if (null != game.currentPlayer.allLegalMoves) {
+                                    if (game.currentPlayer.allLegalMoves.size() != 0) {
+                                        updateBoard();
+                                        showHint(event.getRow(), event.getCol(), true);
+                                    } else {
+                                        endTurn();
+                                    }
                                 } else {
                                     endTurn();
                                 }
-                            } else {
-                                endTurn();
                             }
                         }
+                    } else {
+                        showHint(event.getRow(), event.getCol(), false);
                     }
-                } else {
-                    showHint(event.getRow(), event.getCol(), false);
+                }
+            }else if(playerVsAI){
+                if (!game.isGameHasEnded()) {
+                    if (game.currentPlayer.isWhite()) {
+                        updateBoard();
+                        boardColors();
+
+
+                        if (event.getCol() < 0) {
+                            return;
+                        }
+                        if (event.getRow() < 0) {
+                            return;
+                        }
+                        LightColor lc = game.matrix.getColor(event.getCol(), event.getRow());
+
+
+                        if (lc == null) {
+
+                            for (int i = 0; i < game.UI_moves.size(); i++) {
+
+                                if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
+                                    game.UI_moves.get(i).setFromPosition(game.lastMove);
+                                    game.whitePlayer.allLegalMoves = move(game.UI_moves.get(i), game);
+                                    if (null != game.whitePlayer.allLegalMoves) {
+                                        if (game.whitePlayer.allLegalMoves.size() != 0) {
+                                            updateBoard();
+                                            showHint(event.getRow(), event.getCol(), true);
+                                        } else {
+                                            endTurn();
+                                        }
+                                    } else {
+                                        endTurn();
+                                    }
+                                }
+                            }
+                        } else {
+                            showHint(event.getRow(), event.getCol(), false);
+                        }
+                    }else {
+                        updateBoard();
+                        boardColors();
+                        move(miniMax.getBestMove(game), game);
+                        switchPlayers();
+
+                    }
                 }
             }
-        });
+
+    });
 
     }
 
@@ -69,7 +207,7 @@ public class Main {
         }
     }
 
-     public static void endTurn(){
+     private static void endTurn(){
         updateBoard();
         switchPlayers();
         getLegalMoves(game.currentPlayer.isWhite());
@@ -313,7 +451,6 @@ public class Main {
 
     private static void boardColors(){
         // board init
-        game.matrix.showWindow();
         for (int row = 0; row < game.matrix.getHeight(); row++) {
             for (int column = 0; column < game.matrix.getWidth(); column++) {
                 game.matrix.setBackground(column, row,

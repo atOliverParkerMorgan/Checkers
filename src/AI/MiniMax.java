@@ -5,7 +5,13 @@ import Checkers.Main;
 import Checkers.Move;
 import Checkers.Player;
 
+import javax.management.monitor.Monitor;
+import java.util.ArrayList;
 import java.util.List;
+
+// this code is inspired by MY chessAI engine (https://github.com/atOliverParkerMorgan/Chess_AI/blob/master/src/Game/AI/MiniMax.java)
+// (which I created )
+// why reinvent the wheel, when I've already put in the effort to build my own MiniMax algorithm
 
 public final class MiniMax {
     private int searchDepth;
@@ -30,7 +36,15 @@ public final class MiniMax {
         double alpha = Integer.MIN_VALUE;
         double beta = Integer.MAX_VALUE;
 
-        for (final Move move : player.getAllLegalMoves()) {
+        for (int i = 0; i < player.getAllLegalMoves().size() ; i++) {
+            System.out.println("HERE");
+            Game testGame = game.copy();
+
+            if(Main.move(player.getAllLegalMoves().get(i), testGame)!=null){
+
+            }
+
+
             simulatingGame = game.copy();
             currentValue = simulatingGame.getCurrentPlayer().isWhite()?
                     max(simulatingGame,this.searchDepth, alpha, beta):
@@ -39,11 +53,11 @@ public final class MiniMax {
             // white is max black is min
             if(currentValue>highestSeenValue && simulatingGame.getCurrentPlayer().isWhite()){
                 highestSeenValue = currentValue;
-                bestMove = move;
+                bestMove = player.getAllLegalMoves().get(i);;
 
             }else if(currentValue<lowestSeenValues && !simulatingGame.getCurrentPlayer().isWhite()){
                 lowestSeenValues = currentValue;
-                bestMove = move;
+                bestMove = player.getAllLegalMoves().get(i);
             }
 
 
@@ -103,4 +117,32 @@ public final class MiniMax {
         }
         return lowestSeenValue;
     }
+
+    private List<Game> getAllEndingMoves(Game game, List<Move> followUpMoves){
+       Game originalGame = game.copy();
+       List<Move> allNewMoves = followUpMoves;
+       List<Game> allNewGames = new ArrayList<>();
+        int i = 0;
+        int startIndex = 0;
+        while (i<allNewMoves.size()) {
+            List<Move> nextMoves = Main.move(allNewMoves.get(i), game);
+            i++;
+            if (nextMoves == null) {
+                allNewGames.add(game);
+                game = originalGame;
+                allNewMoves = followUpMoves;
+                startIndex ++;
+                i = startIndex;
+            } else {
+                allNewMoves = nextMoves;
+                i=0;
+            }
+
+        }
+        return allNewGames;
+
+
+    }
+
+
 }

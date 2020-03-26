@@ -1,6 +1,8 @@
 package Checkers;
 
-public class Piece {
+import java.io.Serializable;
+
+public class Piece implements Serializable {
     private int x;
     private int y;
 

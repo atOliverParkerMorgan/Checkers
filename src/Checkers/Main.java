@@ -9,6 +9,7 @@ import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -20,9 +21,41 @@ public class Main {
 
     private  static Game game;
     private Matrix menuMatrix = Matrix.createMatrix(3, 3);
+    private static Matrix gameTimeMatrix = Matrix.createMatrix(8,8);
     private Main() {
+        gameTimeMatrix = Matrix.createMatrix(8, 8);
+        gameTimeMatrix.setLightPanelFactory(new LightPanelFactory() {
+            @Override
+            public LightPanel createLightPanel(BasicLightMatrix matrix, String title) {
+                return new SwingLightPanel(matrix,"Checkers - Oliver Morgan 1.E"){
+                    @Override
+                    protected void paintLight(Graphics g, Rectangle rect, int col, int row, LightColor color, LightColor background) {
+                        super.paintLight(g, rect, col, row, color, background);
+                        Piece whitePiece = game.whitePlayer.getPiece(col, row);
+                        Piece blackPiece = game.blackPlayer.getPiece(col,row);
 
-        game = new Game();
+                        if(whitePiece!=null){
+                            g.setColor(game.whitePlayer.getColor().getColor().getSwingColor());
+                            if(whitePiece.isQueen()){
+                                g.fillRect(rect.x,rect.y,rect.width,rect.height);
+                            }else {
+                                g.fillOval(rect.x,rect.y,rect.width,rect.height);
+                            }
+                        }else if(blackPiece!=null){
+                            g.setColor(game.blackPlayer.getColor().getColor().getSwingColor());
+                            if(blackPiece.isQueen()){
+                                g.fillRect(rect.x,rect.y,rect.width,rect.height);
+                            }else {
+                                g.fillOval(rect.x,rect.y,rect.width,rect.height);
+                            }
+                        }
+                    }
+                };
+
+
+            }
+        });
+        gameTimeMatrix.setBackground(LightColor.WHITE);
         // Menu
         menuMatrix.setLightPanelFactory(new LightPanelFactory() {
             @Override
@@ -67,6 +100,7 @@ public class Main {
 
             }
         });
+        game = new Game();
         menuMatrix.showWindow();
         menuMatrix.setBackground(LightColor.WHITE);
         menuMatrix.setColor(1,2,LightColor.GREEN);
@@ -80,13 +114,13 @@ public class Main {
                menuMatrix.hideWindow();
                menuMatrix = null;
                if(event.getRow()==2){
-                   game.matrix.showWindow();
+                   gameTimeMatrix.showWindow();
                    playerVsPlayer = true;
                }else if(event.getRow()==1){
-                   game.matrix.showWindow();
+                   gameTimeMatrix.showWindow();
                    playerVsAI = true;
                }else if(event.getRow()==0){
-                   game.matrix.showWindow();
+                   gameTimeMatrix.showWindow();
                    AIVsAI = true;
                }
            }
@@ -103,16 +137,14 @@ public class Main {
         getLegalMoves(game.currentPlayer.isWhite());
 
 
-        game.matrix.getInteractiveLightPanel().setUserSelectionMode(
+        gameTimeMatrix.getInteractiveLightPanel().setUserSelectionMode(
                 InteractiveLightPanel.UserSelectionMode.PRESS);
-        game.matrix.getInteractiveLightPanel().setSelectionVisible(true);
-        game.matrix.getInteractiveLightPanel().addSelectListener(event -> {
+        gameTimeMatrix.getInteractiveLightPanel().setSelectionVisible(true);
+        gameTimeMatrix.getInteractiveLightPanel().addSelectListener(event -> {
             if(playerVsPlayer) {
-
                 if (!game.isGameHasEnded()) {
                     updateBoard();
                     boardColors();
-
 
                     if (event.getCol() < 0) {
                         return;
@@ -120,7 +152,7 @@ public class Main {
                     if (event.getRow() < 0) {
                         return;
                     }
-                    LightColor lc = game.matrix.getColor(event.getCol(), event.getRow());
+                    LightColor lc = game.board.getColor(event.getCol(), event.getRow());
 
 
                     if (lc == null) {
@@ -159,7 +191,7 @@ public class Main {
                         if (event.getRow() < 0) {
                             return;
                         }
-                        LightColor lc = game.matrix.getColor(event.getCol(), event.getRow());
+                        LightColor lc = game.board.getColor(event.getCol(), event.getRow());
 
 
                         if (lc == null) {
@@ -201,9 +233,9 @@ public class Main {
     private static void switchPlayers() {
         game.currentPlayer = game.currentPlayer.isWhite()? game.blackPlayer : game.whitePlayer;
         if(game.currentPlayer.isWhite()) {
-            game.matrix.setBackground(LightColor.WHITE);
+            gameTimeMatrix.setBackground(LightColor.WHITE);
         }else{
-            game.matrix.setBackground(LightColor.BLACK);
+            gameTimeMatrix.setBackground(LightColor.BLACK);
         }
     }
 
@@ -227,14 +259,14 @@ public class Main {
     }
 
     private static void checkIfQueen(){
-        for (int i = 0; i < game.matrix.getWidth(); i++) {
-            if(game.matrix.isOn(i,game.matrix.getHeight()-1)){
-                if(game.matrix.getColor(i,game.matrix.getHeight()-1)==Color.WHITE.getColor()) {
-                    game.whitePlayer.setQueen(i,game.matrix.getHeight()-1);
+        for (int i = 0; i < game.board.getWidth(); i++) {
+            if(game.board.isOn(i,game.board.getHeight()-1)){
+                if(game.board.getColor(i,game.board.getHeight()-1)==Color.WHITE.getColor()) {
+                    game.whitePlayer.setQueen(i,game.board.getHeight()-1);
                     break;
                 }
-            }if(game.matrix.isOn(i,0)){
-                if(game.matrix.getColor(i,0)==Color.BLACK.getColor()) {
+            }if(game.board.isOn(i,0)){
+                if(game.board.getColor(i,0)==Color.BLACK.getColor()) {
                     game.blackPlayer.setQueen(i, 0);
                     break;
                 }
@@ -251,7 +283,7 @@ public class Main {
         for (Move move : game.currentPlayer.allLegalMoves) {
             if (move.yFrom == eventRow && move.xFrom == eventCol) {
                 game.UI_moves.add(move);
-                game.matrix.setBackground(move.xTo, move.yTo, LightColor.CYAN);
+                gameTimeMatrix.setBackground(move.xTo, move.yTo, LightColor.CYAN);
             }
         }
         game.lastMove = new Move(eventCol, eventRow);
@@ -299,13 +331,13 @@ public class Main {
                     currentY = currentY + addY;
 
                     while (currentX <= 7 && currentX >= 0 && currentY <= 7 && currentY >= 0) {
-                        if(game.matrix.isOff(currentX,currentY)){
+                        if(game.board.isOff(currentX,currentY)){
                             player.allLegalMoves.add(new Move(piece.getX(),piece.getY(),currentX,currentY,false));
                         }else {
-                            if(!game.matrix.getColor(currentX,currentY).equals(player.getColor().getColor())) {
+                            if(!game.board.getColor(currentX,currentY).equals(player.getColor().getColor())) {
                                 if(currentX < 7 && currentX > 0 && currentY < 7 && currentY > 0) {
 
-                                    if(game.matrix.getColor(currentX + addX , currentY + addY ) == null) {
+                                    if(game.board.getColor(currentX + addX , currentY + addY ) == null) {
                                         player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), currentX + addX, currentY + addY, true));
                                     }
                                 }
@@ -330,14 +362,14 @@ public class Main {
 
                     // move logic
                     if (piece.getX() + 1 <= 7 && yDir + piece.getY() <= 7 && yDir + piece.getY() >= 0) {
-                        if (game.matrix.isOff(piece.getX() + 1, piece.getY() + yDir)) {
+                        if (game.board.isOff(piece.getX() + 1, piece.getY() + yDir)) {
                             if (i != 1) {
                                 player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() + 1, piece.getY() + yDir, false));
                             }
                         } else {
                             if (piece.getX() + 2 <= 7 && 2 * yDir + piece.getY() <= 7 && 2 * yDir + piece.getY() >= 0) {
-                                if (game.matrix.getColor(piece.getX() + 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
-                                        game.matrix.isOff(piece.getX() + 2, piece.getY() + 2 * yDir)) {
+                                if (game.board.getColor(piece.getX() + 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
+                                        game.board.isOff(piece.getX() + 2, piece.getY() + 2 * yDir)) {
                                     player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() + 2, piece.getY() + 2 * yDir, true));
 
                                 }
@@ -346,14 +378,14 @@ public class Main {
                     }
 
                     if (piece.getX() - 1 >= 0 && yDir + piece.getY() <= 7 && yDir + piece.getY() >= 0) {
-                        if (game.matrix.isOff(piece.getX() - 1, piece.getY() + yDir)) {
+                        if (game.board.isOff(piece.getX() - 1, piece.getY() + yDir)) {
                             if (i != 1) {
                                 player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() - 1, piece.getY() + yDir, false));
                             }
                         } else {
                             if (piece.getX() - 2 >= 0 && 2 * yDir + piece.getY() <= 7 && 2 * yDir + piece.getY() >= 0) {
-                                if (game.matrix.getColor(piece.getX() - 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
-                                        game.matrix.isOff(piece.getX() - 2, piece.getY() + 2 * yDir)) {
+                                if (game.board.getColor(piece.getX() - 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
+                                        game.board.isOff(piece.getX() - 2, piece.getY() + 2 * yDir)) {
                                     player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() - 2, piece.getY() + 2 * yDir, true));
 
                                 }
@@ -386,35 +418,48 @@ public class Main {
         // reset board
         for (int row = 0; row < 8; row++) {
             for (int column = 0; column < 8; column++) {
-                game.matrix.setOff(column, row);
+                gameTimeMatrix.setOff(column, row);
             }
         }
 
         // white
         for (Piece piece : game.whitePlayer.getAllPieces()) {
-            game.matrix.setColor(piece.getX(), piece.getY(), game.whitePlayer.getColor().getColor());
+            gameTimeMatrix.setColor(piece.getX(), piece.getY(), game.whitePlayer.getColor().getColor());
         }
 
         // black
         for (Piece piece : game.blackPlayer.getAllPieces()) {
-            game.matrix.setColor(piece.getX(), piece.getY(), game.blackPlayer.getColor().getColor());
+            gameTimeMatrix.setColor(piece.getX(), piece.getY(), game.blackPlayer.getColor().getColor());
         }
         // check if game has ended
 
     }
     public static Game getGameAfterMove(Move move){
        Game gameCopy = game.copy();
-       gameCopy.matrix.hideWindow();
        move(move, gameCopy);
 
 
         return gameCopy;
+    }
+    public static void synchBoard(){
+        game.board.nullOutPieces();
+
+        for(Piece piece: game.whitePlayer.getAllPieces()){
+            game.board.board[piece.getX()][piece.getY()].piece = piece;
+        }
+
+        for(Piece piece: game.blackPlayer.getAllPieces()){
+            game.board.board[piece.getX()][piece.getY()].piece = piece;
+        }
     }
 
 
     public static List<Move> move(Move move, Game game) {
         Piece movingPiece = game.currentPlayer.getPiece(move.xFrom, move.yFrom);
         movingPiece.setXY(move);
+
+
+
         if(move.hasTaken) {
 
             if(move.yFrom<move.yTo){
@@ -431,6 +476,7 @@ public class Main {
                 }
 
             }
+            synchBoard();
             updateBoard();
             getLegalMoves(game.currentPlayer.isWhite());
             List<Move> legalMovesOfPiece = game.currentPlayer.getLegalMovesOfPiece(movingPiece);
@@ -445,15 +491,16 @@ public class Main {
             legalMovesOfPiece = filteredLegalMoves;
             return legalMovesOfPiece;
         }
+        synchBoard();
         return null;
 
     }
 
     private static void boardColors(){
         // board init
-        for (int row = 0; row < game.matrix.getHeight(); row++) {
-            for (int column = 0; column < game.matrix.getWidth(); column++) {
-                game.matrix.setBackground(column, row,
+        for (int row = 0; row < game.board.getHeight(); row++) {
+            for (int column = 0; column < game.board.getWidth(); column++) {
+                gameTimeMatrix.setBackground(column, row,
                         (column + row) % 2 == 0
                                 ? LightColor.CHESSBOARD_DARK
                                 : LightColor.CHESSBOARD_LIGHT);

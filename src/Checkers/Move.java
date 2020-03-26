@@ -1,6 +1,8 @@
 package Checkers;
 
-public final class Move {
+import java.io.Serializable;
+
+public final class Move implements Serializable {
     int xFrom;
     int yFrom;
     int xTo;

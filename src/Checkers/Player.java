@@ -1,5 +1,7 @@
 package Checkers;
 
+import cz.gyarab.util.light.LightColor;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +34,18 @@ public class Player implements Serializable {
     void initPieces(Game game){
         if(isWhite){
             for (int row = 0; row < this.numberOfPieces/4; row++) {
-                for (int column = row % 2; column < game.matrix.getWidth(); column += 2) {
-                    allPieces.add(new Piece(column, row));
+                for (int column = row % 2; column < game.board.getWidth(); column += 2) {
+                    Piece piece = new Piece(column, row, LightColor.CHESSBOARD_WHITE);
+                    allPieces.add(piece);
+                    game.board.addPieceToSpot(column,row,piece);
                 }
             }
         }else {
-            for (int row = game.matrix.getHeight() - 1; row >= game.matrix.getHeight() - numberOfPieces / 4; row--) {
-                for (int column = row % 2; column < game.matrix.getWidth(); column += 2) {
-                    allPieces.add(new Piece(column, row));
+            for (int row = game.board.getHeight() - 1; row >= game.board.getHeight() - numberOfPieces / 4; row--) {
+                for (int column = row % 2; column < game.board.getWidth(); column += 2) {
+                    Piece piece = new Piece(column, row, LightColor.CHESSBOARD_BLACK);
+                    allPieces.add(piece);
+                    game.board.addPieceToSpot(column,row,piece);
                 }
             }
         }

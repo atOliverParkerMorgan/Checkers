@@ -74,7 +74,19 @@ public class Game implements Serializable {
         return gameHasEnded;
     }
 
-    // !!! not my code, copied from the internet !!!
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public Player getWhitePlayer() {
+        return whitePlayer;
+    }
+
+    public Player getBlackPlayer() {
+        return blackPlayer;
+    }
+
+    // !!! This is not my code, copied from the internet !!!
     public Game copy() {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -87,17 +99,5 @@ public class Game implements Serializable {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public Player getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public Player getWhitePlayer() {
-        return whitePlayer;
-    }
-
-    public Player getBlackPlayer() {
-        return blackPlayer;
     }
 }

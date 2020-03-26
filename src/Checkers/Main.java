@@ -39,7 +39,7 @@ public class Main {
 
                         if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
                             game.UI_moves.get(i).setFromPosition(game.lastMove);
-                            game.currentPlayer.allLegalMoves = move(game.UI_moves.get(i));
+                            game.currentPlayer.allLegalMoves = move(game.UI_moves.get(i), game);
                             if (null != game.currentPlayer.allLegalMoves) {
                                 if (game.currentPlayer.allLegalMoves.size() != 0) {
                                     updateBoard();
@@ -264,8 +264,17 @@ public class Main {
         // check if game has ended
 
     }
+    public static Game getGameAfterMove(Move move){
+       Game gameCopy = game.copy();
+       gameCopy.matrix.hideWindow();
+       move(move, gameCopy);
 
-    public static List<Move> move(Move move) {
+
+        return gameCopy;
+    }
+
+
+    public static List<Move> move(Move move, Game game) {
         Piece movingPiece = game.currentPlayer.getPiece(move.xFrom, move.yFrom);
         movingPiece.setXY(move);
         if(move.hasTaken) {

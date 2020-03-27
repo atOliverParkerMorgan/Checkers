@@ -1,5 +1,6 @@
 package Checkers;
 
+import AI.GameAndFollowUpMove;
 import AI.MiniMax;
 import cz.gyarab.util.light.*;
 
@@ -15,13 +16,13 @@ import java.util.List;
 public class Main {
 
     private boolean playerVsPlayer = false;
-    private MiniMax miniMax = new MiniMax(1);
+    private static MiniMax miniMax = new MiniMax(1);
     private boolean playerVsAI = false;
     private boolean AIVsAI = false;
 
     private  static Game game;
     private Matrix menuMatrix = Matrix.createMatrix(3, 3);
-    private static Matrix gameTimeMatrix = Matrix.createMatrix(8,8);
+    public static Matrix gameTimeMatrix = Matrix.createMatrix(8,8);
     private Main() {
         gameTimeMatrix = Matrix.createMatrix(8, 8);
         gameTimeMatrix.setLightPanelFactory(new LightPanelFactory() {
@@ -180,7 +181,8 @@ public class Main {
                 }
             }else if(playerVsAI){
                 if (!game.isGameHasEnded()) {
-                    if (game.currentPlayer.isWhite()) {
+                    if(game.currentPlayer.isWhite()) {
+
                         updateBoard();
                         boardColors();
 
@@ -207,6 +209,7 @@ public class Main {
                                             showHint(event.getRow(), event.getCol(), true);
                                         } else {
                                             endTurn();
+
                                         }
                                     } else {
                                         endTurn();
@@ -217,17 +220,26 @@ public class Main {
                             showHint(event.getRow(), event.getCol(), false);
                         }
                     }else {
-                        updateBoard();
-                        boardColors();
-                        move(miniMax.getBestMove(game), game);
-                        switchPlayers();
-
+                        moveAI();
                     }
                 }
+
             }
 
     });
 
+    }
+
+    private static void moveAI(){
+        for(Move m: game.currentPlayer.getAllLegalMoves()){
+            gameTimeMatrix.setBackground(m.xTo,m.yTo,LightColor.DARK_GRAY);
+        }
+        List<Move> followUpMoves = move(miniMax.getBestMove(game),game);
+        while (followUpMoves!=null){
+            followUpMoves = move(miniMax.getBestMove(game),game);
+        }
+
+        endTurn();
     }
 
     private static void switchPlayers() {
@@ -288,7 +300,6 @@ public class Main {
         }
         game.lastMove = new Move(eventCol, eventRow);
     }
-
 
 
     private static void getLegalMoves(boolean isWhite){
@@ -383,6 +394,7 @@ public class Main {
                                 player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() - 1, piece.getY() + yDir, false));
                             }
                         } else {
+
                             if (piece.getX() - 2 >= 0 && 2 * yDir + piece.getY() <= 7 && 2 * yDir + piece.getY() >= 0) {
                                 if (game.board.getColor(piece.getX() - 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
                                         game.board.isOff(piece.getX() - 2, piece.getY() + 2 * yDir)) {
@@ -434,12 +446,13 @@ public class Main {
         // check if game has ended
 
     }
-    public static Game getGameAfterMove(Move move){
+
+
+    public static GameAndFollowUpMove getGameAfterMove(Move move){
        Game gameCopy = game.copy();
-       move(move, gameCopy);
+       GameAndFollowUpMove gameAndFollowUpMove = new GameAndFollowUpMove(gameCopy,move(move, gameCopy));
 
-
-        return gameCopy;
+        return gameAndFollowUpMove;
     }
     public static void synchBoard(){
         game.board.nullOutPieces();
@@ -457,11 +470,7 @@ public class Main {
     public static List<Move> move(Move move, Game game) {
         Piece movingPiece = game.currentPlayer.getPiece(move.xFrom, move.yFrom);
         movingPiece.setXY(move);
-
-
-
         if(move.hasTaken) {
-
             if(move.yFrom<move.yTo){
                 if(move.xFrom<move.xTo) {
                     game.currentPlayer.removePieceFromOpponent(move.xTo - 1, move.yTo - 1);

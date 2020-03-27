@@ -7,7 +7,7 @@ public final class Move implements Serializable {
     int yFrom;
     int xTo;
     int yTo;
-    boolean hasTaken;
+    public boolean hasTaken;
 
     Move(int xFrom, int yFrom, int xTo, int yTo, boolean hasTaken){
         this.xFrom = xFrom;

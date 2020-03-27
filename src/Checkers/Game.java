@@ -66,4 +66,12 @@ public class Game implements Serializable {
             return null;
         }
     }
+
+    public void changeGameToCopy(Game game){
+        this.currentPlayer = game.currentPlayer;
+        this.blackPlayer = game.blackPlayer;
+        this.whitePlayer = game.whitePlayer;
+        this.board = game.board;
+        this.gameHasEnded = game.gameHasEnded;
+    }
 }

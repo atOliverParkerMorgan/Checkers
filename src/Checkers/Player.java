@@ -109,6 +109,10 @@ public class Player implements Serializable {
         return allLegalMoves;
     }
 
+    public void setAllLegalMoves(List<Move> allLegalMoves) {
+        this.allLegalMoves = allLegalMoves;
+    }
+
     //public void setAllLegalMoves(List<Move> allLegalMoves) {
     //    this.allLegalMoves = allLegalMoves;
     //}

@@ -4,12 +4,6 @@ import Checkers.Game;
 import Checkers.Main;
 import Checkers.Move;
 import Checkers.Player;
-import cz.gyarab.util.light.LightColor;
-
-import javax.management.monitor.Monitor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 // this code is inspired by MY chessAI engine (https://github.com/atOliverParkerMorgan/Chess_AI/blob/master/src/Game/AI/MiniMax.java)
 // (which I created )
@@ -17,8 +11,6 @@ import java.util.List;
 
 public final class MiniMax {
     private int searchDepth;
-    private List<Move> moveAddedAfterJumpedOver;
-    private List<List<Move>> allMovesJumpedOver;
 
     public MiniMax(int searchDepth) {
         this.searchDepth = searchDepth;
@@ -43,8 +35,8 @@ public final class MiniMax {
         for (Move move : player.getAllLegalMoves()) {
             simulatingGame = game.copy();
             currentValue = player.isWhite() ?
-                    max(simulatingGame, this.searchDepth, alpha, beta, !move.hasTaken) :
-                    min(simulatingGame, this.searchDepth, alpha, beta, !move.hasTaken);
+                    max(simulatingGame, this.searchDepth, alpha, beta) :
+                    min(simulatingGame, this.searchDepth, alpha, beta);
 
             // white is max black is min
             if(currentValue>highestSeenValue && player.isWhite()){
@@ -61,7 +53,7 @@ public final class MiniMax {
         return bestMove;
     }
 
-    private double max(Game game, final int depth, double alpha, double beta, boolean switchMinMax) {
+    private double max(Game game, final int depth, double alpha, double beta) {
         if (depth == 0 || game.isGameHasEnded()) {
             return Evaluation.Score(game);
         }
@@ -69,19 +61,19 @@ public final class MiniMax {
         Game original = game.copy();
         System.out.println(original.getCurrentPlayer().isWhite());
         for (final Move move : original.getCurrentPlayer().getAllLegalMoves()) {
-            System.out.println("Move: "+ move);
+            System.out.println(move);
             GameAndFollowUpMove gameAndFollowUpMove = Main.getGameAfterMove(move);
             Game newGame = gameAndFollowUpMove.game;
             final double currentValue;
             if(gameAndFollowUpMove.move!=null){
                 newGame.getCurrentPlayer().setAllLegalMoves(gameAndFollowUpMove.move);
-                Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),true, game);
-                currentValue = max(newGame, depth - 1, alpha, beta, !move.hasTaken);
+              //  Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),true, game);
+                currentValue = max(newGame, depth - 1, alpha, beta);
             }
            else {
-                newGame.setCurrentPlayer(newGame.getBlackPlayer());
-                newGame.getCurrentPlayer().setAllLegalMoves(Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(), false, game));
-                currentValue = min(newGame, depth - 1, alpha, beta, !move.hasTaken);
+              //  newGame.setCurrentPlayer(newGame.getBlackPlayer());
+              //  newGame.getCurrentPlayer().setAllLegalMoves(Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(), false, game));
+                currentValue = min(newGame, depth - 1, alpha, beta);
 
             }
             highestSeenValue = Math.max(currentValue, highestSeenValue);
@@ -97,28 +89,28 @@ public final class MiniMax {
         return highestSeenValue;
     }
 
-    private double min(Game game, final int depth, double alpha, double beta, boolean switchMinMax) {
+    private double min(Game game, final int depth, double alpha, double beta) {
         if (depth == 0 || game.isGameHasEnded()) {
             return Evaluation.Score(game);
         }
 
         double lowestSeenValue = Double.MAX_VALUE;
         Game original = game.copy();
-
+        System.out.println(original.getCurrentPlayer().isWhite());
         for (final Move move : original.getCurrentPlayer().getAllLegalMoves()) {
             GameAndFollowUpMove gameAndFollowUpMove = Main.getGameAfterMove(move);
             Game newGame = gameAndFollowUpMove.game;
             final double currentValue;
             if(gameAndFollowUpMove.move!=null){
-                newGame.getCurrentPlayer().setAllLegalMoves(gameAndFollowUpMove.move);
-                Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),true, game);
-                currentValue = min(newGame, depth - 1, alpha, beta, !move.hasTaken);
+               newGame.getCurrentPlayer().setAllLegalMoves(gameAndFollowUpMove.move);
+               // Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),true, game);
+                currentValue = min(newGame, depth - 1, alpha, beta);
             }
             else {
-                newGame.setCurrentPlayer(newGame.getWhitePlayer());
-                newGame.getCurrentPlayer().setAllLegalMoves(Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),false, game));
-                System.out.println(newGame.getCurrentPlayer().getAllLegalMoves());
-                currentValue = max(newGame, depth - 1, alpha, beta, !move.hasTaken);
+               // newGame.setCurrentPlayer(newGame.getWhitePlayer());
+               // newGame.getCurrentPlayer().setAllLegalMoves(Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),false, game));
+
+                currentValue = max(newGame, depth - 1, alpha, beta);
             }
 
             lowestSeenValue = Math.min(currentValue, lowestSeenValue);

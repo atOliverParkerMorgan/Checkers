@@ -4,20 +4,15 @@ import cz.gyarab.util.light.LightColor;
 
 import java.io.Serializable;
 
-public class Spot implements Serializable {
-    final int x;
-    final int y;
+class Spot implements Serializable {
+    private final int x;
+    private final int y;
     Piece piece;
 
     Spot(int x, int y){
         this.x = x;
         this.y = y;
         this.piece = null;
-    }
-    Spot(int x, int y, Piece piece){
-        this.x = x;
-        this.y = y;
-        this.piece = piece;
     }
 
     LightColor getPieceColor(){
@@ -31,5 +26,13 @@ public class Spot implements Serializable {
 
     Piece getPiece() {
         return piece;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getX() {
+        return x;
     }
 }

@@ -5,9 +5,9 @@ import java.io.Serializable;
 public final class Move implements Serializable {
     int xFrom;
     int yFrom;
-    public int xTo;
-    public int yTo;
-    public boolean hasTaken;
+    int xTo;
+    int yTo;
+    boolean hasTaken;
 
     Move(int xFrom, int yFrom, int xTo, int yTo, boolean hasTaken){
         this.xFrom = xFrom;
@@ -16,7 +16,7 @@ public final class Move implements Serializable {
         this.yTo = yTo;
         this.hasTaken = hasTaken;
     }
-    public Move(int xFrom, int yFrom){
+    Move(int xFrom, int yFrom){
         this.xFrom = xFrom;
         this.yFrom = yFrom;
         this.xTo = -1;

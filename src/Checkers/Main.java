@@ -10,19 +10,18 @@ import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Main {
 
     private boolean playerVsPlayer = false;
-    private static MiniMax miniMax = new MiniMax(4);
+    private static MiniMax miniMax = new MiniMax(2);
     private boolean playerVsAI = false;
     private boolean AIVsAI = false;
 
     private  static Game game;
     private Matrix menuMatrix = Matrix.createMatrix(3, 3);
-    public static Matrix gameTimeMatrix = Matrix.createMatrix(8,8);
+    private static Matrix gameTimeMatrix = Matrix.createMatrix(8,8);
     private Main() {
         gameTimeMatrix = Matrix.createMatrix(8, 8);
         gameTimeMatrix.setLightPanelFactory(new LightPanelFactory() {
@@ -231,14 +230,10 @@ public class Main {
 
     private static void moveAI(){
         List<Move> followUpMoves = move(miniMax.getBestMove(game),game);
-        //while (followUpMoves!=null){
-        //    followUpMoves = move(miniMax.getBestMove(game),game);
-        //}
-
         endTurn();
     }
 
-    private static void switchPlayers() {
+    private static void switchPlayers(Game game) {
         game.currentPlayer = game.currentPlayer.isWhite()? game.blackPlayer : game.whitePlayer;
         if(game.currentPlayer.isWhite()) {
             gameTimeMatrix.setBackground(LightColor.WHITE);
@@ -249,7 +244,7 @@ public class Main {
 
      private static void endTurn(){
         updateBoard();
-        switchPlayers();
+        switchPlayers(game);
         getLegalMoves(game.currentPlayer.isWhite(), false, game);
 
         if(checkIfPlayerHasLost(game.currentPlayer)){
@@ -298,7 +293,7 @@ public class Main {
     }
 
 
-    public static List<Move> getLegalMoves(boolean isWhite, boolean followUp, Game game){
+    private static void getLegalMoves(boolean isWhite, boolean followUp, Game game){
         Player player;
         int yDir;
         if(isWhite){
@@ -414,8 +409,6 @@ public class Main {
 
         }
 
-        return player.getAllLegalMoves();
-
     }
 
     private static void updateBoard() {
@@ -448,7 +441,8 @@ public class Main {
        checkIfQueen();
        return gameAndFollowUpMove;
     }
-    public static void synchBoard(){
+
+    private static void synchBoard(){
         game.board.nullOutPieces();
 
         for(Piece piece: game.whitePlayer.getAllPieces()){
@@ -461,7 +455,7 @@ public class Main {
     }
 
 
-    public static List<Move> move(Move move, Game game) {
+    private static List<Move> move(Move move, Game game) {
         Piece movingPiece = game.currentPlayer.getPiece(move.xFrom, move.yFrom);
         movingPiece.setXY(move);
         if(move.hasTaken) {

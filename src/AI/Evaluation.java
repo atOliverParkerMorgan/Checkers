@@ -3,12 +3,12 @@ package AI;
 import Checkers.Game;
 import Checkers.Piece;
 
-public class Evaluation {
-    public final static int PieceBias = 10;
-    public final static int QueenBias = 40;
+class Evaluation {
+    private final static int PieceBias = 10;
+    private final static int QueenBias = 40;
 
 
-    public static int Score(Game game){
+    static int Score(Game game){
         int numberOfWhitePieces = 0;
         int numberOfBlackPieces = 0;
         for (Piece piece: game.getWhitePlayer().getAllPieces()) {

@@ -5,8 +5,8 @@ import java.io.Serializable;
 public final class Move implements Serializable {
     int xFrom;
     int yFrom;
-    int xTo;
-    int yTo;
+    public int xTo;
+    public int yTo;
     public boolean hasTaken;
 
     Move(int xFrom, int yFrom, int xTo, int yTo, boolean hasTaken){

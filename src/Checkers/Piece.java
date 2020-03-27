@@ -34,7 +34,7 @@ public class Piece implements Serializable {
         this.isQueen = true;
     }
 
-    boolean isQueen() {
+    public boolean isQueen() {
         return isQueen;
     }
 

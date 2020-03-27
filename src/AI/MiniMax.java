@@ -32,20 +32,19 @@ public final class MiniMax {
         //int numMoves = 100 / game.getCurrentPlayer().getAllLegalMoves().size();
 
         // these values have to be changed during the first miniMax loop
-        double highestSeenValue = Integer.MIN_VALUE;
-        double lowestSeenValues = Integer.MAX_VALUE;
+        double highestSeenValue = Double.MIN_VALUE;
 
+        double lowestSeenValues = Double.MAX_VALUE;
         Player player = game.getCurrentPlayer();
 
-        double alpha = Integer.MIN_VALUE;
-        double beta = Integer.MAX_VALUE;
+        double alpha = Double.MIN_VALUE;
+        double beta = Double.MAX_VALUE;
 
         for (Move move : player.getAllLegalMoves()) {
             simulatingGame = game.copy();
             currentValue = player.isWhite() ?
                     max(simulatingGame, this.searchDepth, alpha, beta, !move.hasTaken) :
                     min(simulatingGame, this.searchDepth, alpha, beta, !move.hasTaken);
-            System.out.println(currentValue);
 
             // white is max black is min
             if(currentValue>highestSeenValue && player.isWhite()){
@@ -56,35 +55,35 @@ public final class MiniMax {
                 lowestSeenValues = currentValue;
                 bestMove = move;
             }
-            System.out.println(lowestSeenValues);
-        }
 
+        }
 
         return bestMove;
     }
 
     private double max(Game game, final int depth, double alpha, double beta, boolean switchMinMax) {
-        if (depth == 0) {
+        if (depth == 0 || game.isGameHasEnded()) {
             return Evaluation.Score(game);
         }
-        double highestSeenValue = Integer.MIN_VALUE;
+        double highestSeenValue = Double.MIN_VALUE;
         Game original = game.copy();
-
+        System.out.println(original.getCurrentPlayer().isWhite());
         for (final Move move : original.getCurrentPlayer().getAllLegalMoves()) {
-
+            System.out.println("Move: "+ move);
             GameAndFollowUpMove gameAndFollowUpMove = Main.getGameAfterMove(move);
             Game newGame = gameAndFollowUpMove.game;
+            final double currentValue;
             if(gameAndFollowUpMove.move!=null){
                 newGame.getCurrentPlayer().setAllLegalMoves(gameAndFollowUpMove.move);
-            }
-            // this.timeMove+= System.currentTimeMillis() - starTime;
-            final double currentValue;
-            if(switchMinMax) {
-                currentValue = min(newGame, depth - 1, alpha, beta, !move.hasTaken);
-            }else {
+                Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),true, game);
                 currentValue = max(newGame, depth - 1, alpha, beta, !move.hasTaken);
             }
+           else {
+                newGame.setCurrentPlayer(newGame.getBlackPlayer());
+                newGame.getCurrentPlayer().setAllLegalMoves(Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(), false, game));
+                currentValue = min(newGame, depth - 1, alpha, beta, !move.hasTaken);
 
+            }
             highestSeenValue = Math.max(currentValue, highestSeenValue);
             alpha = Math.max(alpha, highestSeenValue);
 
@@ -99,25 +98,27 @@ public final class MiniMax {
     }
 
     private double min(Game game, final int depth, double alpha, double beta, boolean switchMinMax) {
-        if (depth == 0) {
+        if (depth == 0 || game.isGameHasEnded()) {
             return Evaluation.Score(game);
         }
 
-        double lowestSeenValue = Integer.MAX_VALUE;
+        double lowestSeenValue = Double.MAX_VALUE;
         Game original = game.copy();
 
         for (final Move move : original.getCurrentPlayer().getAllLegalMoves()) {
             GameAndFollowUpMove gameAndFollowUpMove = Main.getGameAfterMove(move);
             Game newGame = gameAndFollowUpMove.game;
+            final double currentValue;
             if(gameAndFollowUpMove.move!=null){
                 newGame.getCurrentPlayer().setAllLegalMoves(gameAndFollowUpMove.move);
-            }
-            // this.timeMove+= System.currentTimeMillis() - starTime;
-            final double currentValue;
-            if(switchMinMax) {
-                currentValue = max(newGame, depth - 1, alpha, beta, !move.hasTaken);
-            }else {
+                Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),true, game);
                 currentValue = min(newGame, depth - 1, alpha, beta, !move.hasTaken);
+            }
+            else {
+                newGame.setCurrentPlayer(newGame.getWhitePlayer());
+                newGame.getCurrentPlayer().setAllLegalMoves(Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),false, game));
+                System.out.println(newGame.getCurrentPlayer().getAllLegalMoves());
+                currentValue = max(newGame, depth - 1, alpha, beta, !move.hasTaken);
             }
 
             lowestSeenValue = Math.min(currentValue, lowestSeenValue);

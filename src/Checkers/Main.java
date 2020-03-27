@@ -16,7 +16,7 @@ import java.util.List;
 public class Main {
 
     private boolean playerVsPlayer = false;
-    private static MiniMax miniMax = new MiniMax(1);
+    private static MiniMax miniMax = new MiniMax(4);
     private boolean playerVsAI = false;
     private boolean AIVsAI = false;
 
@@ -135,7 +135,7 @@ public class Main {
 
         boardColors();
         updateBoard();
-        getLegalMoves(game.currentPlayer.isWhite());
+        getLegalMoves(game.currentPlayer.isWhite(),false, game);
 
 
         gameTimeMatrix.getInteractiveLightPanel().setUserSelectionMode(
@@ -209,18 +209,17 @@ public class Main {
                                             showHint(event.getRow(), event.getCol(), true);
                                         } else {
                                             endTurn();
-
+                                            moveAI();
                                         }
                                     } else {
                                         endTurn();
+                                        moveAI();
                                     }
                                 }
                             }
                         } else {
                             showHint(event.getRow(), event.getCol(), false);
                         }
-                    }else {
-                        moveAI();
                     }
                 }
 
@@ -231,13 +230,10 @@ public class Main {
     }
 
     private static void moveAI(){
-        for(Move m: game.currentPlayer.getAllLegalMoves()){
-            gameTimeMatrix.setBackground(m.xTo,m.yTo,LightColor.DARK_GRAY);
-        }
         List<Move> followUpMoves = move(miniMax.getBestMove(game),game);
-        while (followUpMoves!=null){
-            followUpMoves = move(miniMax.getBestMove(game),game);
-        }
+        //while (followUpMoves!=null){
+        //    followUpMoves = move(miniMax.getBestMove(game),game);
+        //}
 
         endTurn();
     }
@@ -254,7 +250,7 @@ public class Main {
      private static void endTurn(){
         updateBoard();
         switchPlayers();
-        getLegalMoves(game.currentPlayer.isWhite());
+        getLegalMoves(game.currentPlayer.isWhite(), false, game);
 
         if(checkIfPlayerHasLost(game.currentPlayer)){
            if(game.currentPlayer.isWhite()){
@@ -302,7 +298,7 @@ public class Main {
     }
 
 
-    private static void getLegalMoves(boolean isWhite){
+    public static List<Move> getLegalMoves(boolean isWhite, boolean followUp, Game game){
         Player player;
         int yDir;
         if(isWhite){
@@ -367,7 +363,7 @@ public class Main {
 
             }else {
                 // calculating behind moves
-                int loopOver = 2;
+                int loopOver = followUp? 2: 1;
 
                 for (int i = 0; i < loopOver; i++) {
 
@@ -415,14 +411,10 @@ public class Main {
             }
 
 
-            //System.out.println("x: "+piece.getX());
-            //System.out.println("y: "+piece.getY());
+
         }
-       // for(Checkers.Move m:whitePlayer.allLegalMoves){
-       //     matrix.setColor(m.xTo,m.yTo,LightColor.GREEN);
-       // }
 
-
+        return player.getAllLegalMoves();
 
     }
 
@@ -450,9 +442,11 @@ public class Main {
 
     public static GameAndFollowUpMove getGameAfterMove(Move move){
        Game gameCopy = game.copy();
-       GameAndFollowUpMove gameAndFollowUpMove = new GameAndFollowUpMove(gameCopy,move(move, gameCopy));
-
-        return gameAndFollowUpMove;
+       GameAndFollowUpMove gameAndFollowUpMove = new GameAndFollowUpMove(gameCopy, move(move, gameCopy));
+       synchBoard();
+       updateBoard();
+       checkIfQueen();
+       return gameAndFollowUpMove;
     }
     public static void synchBoard(){
         game.board.nullOutPieces();
@@ -487,7 +481,7 @@ public class Main {
             }
             synchBoard();
             updateBoard();
-            getLegalMoves(game.currentPlayer.isWhite());
+            getLegalMoves(game.currentPlayer.isWhite(), true, game);
             List<Move> legalMovesOfPiece = game.currentPlayer.getLegalMovesOfPiece(movingPiece);
             List<Move> filteredLegalMoves = new ArrayList<>();
 

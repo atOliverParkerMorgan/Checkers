@@ -208,12 +208,13 @@ public class Main {
                 updateBoard(game);
                 boardColors();
                 if(game.currentPlayer.isWhite()) {
-                    moveAI(game.whitePlayer, true);
+                    moveAI(game.whitePlayer, false);
+                    gameTimeMatrix.getInteractiveLightPanel().unselect();
                 }else {
 
-                    moveAI(game.blackPlayer, true);
+                    moveAI(game.blackPlayer, false);
+                    gameTimeMatrix.getInteractiveLightPanel().unselect();
                 }
-
 
 
             }

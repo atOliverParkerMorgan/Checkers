@@ -76,7 +76,4 @@ public class Game implements Serializable {
         this.currentPlayer = currentPlayer;
     }
 
-    public Board getBoard() {
-        return board;
-    }
 }

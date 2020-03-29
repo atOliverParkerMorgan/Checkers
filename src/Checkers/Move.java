@@ -3,10 +3,10 @@ package Checkers;
 import java.io.Serializable;
 
 public final class Move implements Serializable {
-    public int xFrom;
-    public int yFrom;
-    public int xTo;
-    public int yTo;
+    int xFrom;
+    int yFrom;
+    int xTo;
+    int yTo;
     boolean hasTaken;
 
     Move(int xFrom, int yFrom, int xTo, int yTo, boolean hasTaken){
@@ -22,10 +22,6 @@ public final class Move implements Serializable {
         this.xTo = -1;
         this.yTo = -1;
     }
-  // boolean isDouble(){
-
-  //     return Math.abs(xTo - xFrom)==2 && Math.abs(yTo - yFrom)==2;
-  // }
 
     void setFromPosition(Move move){
         this.xFrom = move.xFrom;

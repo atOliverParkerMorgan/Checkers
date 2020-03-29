@@ -3,8 +3,7 @@ package Checkers;
 import cz.gyarab.util.light.LightColor;
 
 import java.io.*;
-
-public class Board implements Serializable {
+class Board implements Serializable {
     Spot[][] board;
     private int width;
     private int height;
@@ -62,7 +61,7 @@ public class Board implements Serializable {
 
     }
 
-    public void printOut() {
+    void printOut() {
         StringBuilder charBoard = new StringBuilder();
 
         for (int i = 7; i >= 0; i--) {
@@ -100,7 +99,4 @@ public class Board implements Serializable {
         System.out.println(charBoard.toString());
     }
 
-    public Spot[][] getBoard() {
-        return board;
-    }
 }

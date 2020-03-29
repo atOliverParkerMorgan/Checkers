@@ -1,7 +1,5 @@
 package Checkers;
 
-import cz.gyarab.util.light.LightColor;
-
 import java.io.Serializable;
 
 public class Piece implements Serializable {

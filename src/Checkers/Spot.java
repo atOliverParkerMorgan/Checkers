@@ -1,7 +1,5 @@
 package Checkers;
 
-import cz.gyarab.util.light.LightColor;
-
 import java.io.Serializable;
 
 class Spot implements Serializable {
@@ -20,11 +18,11 @@ class Spot implements Serializable {
         return piece;
     }
 
-    public int getY() {
+    int getY() {
         return y;
     }
 
-    public int getX() {
+    int getX() {
         return x;
     }
 }

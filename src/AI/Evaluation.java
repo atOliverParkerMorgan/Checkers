@@ -6,29 +6,32 @@ import Checkers.Piece;
 class Evaluation {
     private final static int PieceBias = 10;
     private final static int QueenBias = 40;
+    private final static int EndOfBoardPosition = 5;
 
 
     static int Score(Game game){
-        int numberOfWhitePieces = 0;
-        int numberOfBlackPieces = 0;
+        int whiteScore = 0;
+        int blackScore = 0;
         for (Piece piece: game.getWhitePlayer().getAllPieces()) {
             if(piece.isQueen()){
-                numberOfWhitePieces+=QueenBias;
+                whiteScore+=QueenBias;
             }else {
-                numberOfWhitePieces+=PieceBias;
+                whiteScore+=PieceBias;
             }
+
         }
 
         for (Piece piece: game.getBlackPlayer().getAllPieces()) {
             if(piece.isQueen()){
-                numberOfBlackPieces+=QueenBias;
+                blackScore+=QueenBias;
             }else {
-                numberOfBlackPieces+=PieceBias;
+                blackScore+=PieceBias;
             }
+
         }
 
 
-        return numberOfWhitePieces - numberOfBlackPieces;
+        return whiteScore - blackScore;
 
     }
 

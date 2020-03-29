@@ -14,7 +14,7 @@ import java.util.List;
 public class Main {
 
     private boolean playerVsPlayer = false;
-    private static MiniMax miniMax = new MiniMax(1);
+    private static MiniMax miniMax = new MiniMax(4); //optimal in my opinion
     private boolean playerVsAI = false;
     private boolean AIVsAI = false;
 
@@ -132,7 +132,7 @@ public class Main {
 
 
         boardColors();
-        updateBoard();
+        updateBoard(game);
         getLegalMoves(game.currentPlayer.isWhite(),false, game);
 
 
@@ -142,7 +142,7 @@ public class Main {
         gameTimeMatrix.getInteractiveLightPanel().addSelectListener(event -> {
             if(playerVsPlayer) {
                 if (!game.isGameHasEnded()) {
-                    updateBoard();
+                    updateBoard(game);
                     boardColors();
 
                     if (event.getCol() < 0) {
@@ -159,7 +159,7 @@ public class Main {
 
                             if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
                                 game.UI_moves.get(i).setFromPosition(game.lastMove);
-                                move(game.UI_moves.get(i), game, false);
+                                move(game.UI_moves.get(i), game, false, false);
                             }
                         }
                     } else {
@@ -170,7 +170,7 @@ public class Main {
                 if (!game.isGameHasEnded()) {
                     if(game.currentPlayer.isWhite()) {
 
-                        updateBoard();
+                        updateBoard(game);
                         boardColors();
 
 
@@ -189,11 +189,10 @@ public class Main {
 
                                 if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
                                     game.UI_moves.get(i).setFromPosition(game.lastMove);
-                                    move(game.UI_moves.get(i), game, false);
-                                    if(!game.currentPlayer.isWhite()){
-                                        moveAI();
-                                    }
+                                    move(game.UI_moves.get(i), game, false, false);
 
+                                    // AI move
+                                    moveAI(game.blackPlayer, true);
                                 }
                             }
                         } else {
@@ -204,22 +203,32 @@ public class Main {
                     }
                 }
 
+            }else if(AIVsAI) {
+                updateBoard(game);
+                boardColors();
+                if(game.currentPlayer.isWhite()) {
+                    moveAI(game.whitePlayer, true);
+                }else {
+
+                    moveAI(game.blackPlayer, true);
+                }
+
+
+
             }
-
-    });
-
+        });
     }
 
-    private static void moveAI(){
-       // while (!game.currentPlayer.isWhite()) {
-        System.out.println("Start");
-        //game.getBoard().printOut();
-        Game test = Game.copy(game);
-        Move bestMove = miniMax.getBestMove(test);
-        System.out.println("Player: "+test.currentPlayer);
-        game= test;
+    private static void moveAI(Player player, boolean whereFrom){
+       while (game.currentPlayer == player) {
+           Game test = Game.copy(game);
+           Move bestMove = miniMax.getBestMove(test, true);
+           if(whereFrom) {
+               game = test;
+           }
+           move(bestMove, game, false ,whereFrom);
+       }
 
-        move(bestMove, game, false);
 
     }
 
@@ -233,7 +242,7 @@ public class Main {
     }
 
      private static void endTurn(boolean switchPlayers){
-        updateBoard();
+        updateBoard(game);
         if(switchPlayers) {
             switchPlayers(game);
         }
@@ -399,7 +408,7 @@ public class Main {
 
     }
 
-    private static void updateBoard() {
+    private static void updateBoard(Game game) {
         // reset board
         for (int row = 0; row < 8; row++) {
             for (int column = 0; column < 8; column++) {
@@ -423,7 +432,7 @@ public class Main {
 
     public static Game getGameAfterMove(Move move, Game game){
        Game gameCopy = Game.copy(game);
-       move(move, gameCopy, true);
+       move(move, gameCopy, true, false);
 
        return gameCopy;
     }
@@ -441,23 +450,17 @@ public class Main {
     }
 
 
-    private static void move(Move move, Game game, boolean AI) {
-
+    private static void move(Move move, Game game, boolean AI, boolean whereFrom) {
         Piece movingPiece = game.currentPlayer.getPiece(move.xFrom, move.yFrom);
 
+        // Fixing Errors in miniMax
         if(movingPiece==null){
-
-            gameTimeMatrix.setBackground(move.xFrom,move.yFrom, LightColor.RED);
-            System.out.println("Error, the piece wasn't found");
-            System.out.println("xFrom: "+ move.xFrom);
-            System.out.println("yFrom: "+ move.yFrom);
             endTurn(true);
             return;
         }
+
         movingPiece.setXY(move);
-        if(AI){
-            gameTimeMatrix.setBackground(move.xFrom, move.yFrom, LightColor.GREEN);
-        }
+        if(whereFrom){gameTimeMatrix.setBackground(move.xFrom, move.yFrom, LightColor.GREEN); }
         if(move.hasTaken) {
             if(move.yFrom<move.yTo){
                 if(move.xFrom<move.xTo) {
@@ -474,7 +477,7 @@ public class Main {
 
             }
             synchBoard(game);
-            updateBoard();
+            updateBoard(game);
             getLegalMoves(game.currentPlayer.isWhite(), true, game);
             List<Move> legalMovesOfPiece = game.currentPlayer.getLegalMovesOfPiece(movingPiece);
             List<Move> filteredLegalMoves = new ArrayList<>();
@@ -489,7 +492,7 @@ public class Main {
                 game.currentPlayer.allLegalMoves = filteredLegalMoves;
 
                 endTurn(false);
-                updateBoard();
+                updateBoard(game);
                 if(!AI) {
                     game.UI_moves = filteredLegalMoves;
                     showHint(move.xTo, move.yTo);
@@ -504,9 +507,9 @@ public class Main {
             synchBoard(game);
             endTurn(true);
         }
-        //game.board.printOut();
-
-
+        if(!AI||whereFrom){
+            game.board.printOut();
+        }
     }
 
     private static void boardColors(){

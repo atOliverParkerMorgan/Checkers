@@ -1,7 +1,5 @@
 package Checkers;
 
-import cz.gyarab.util.light.LightColor;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,11 +101,6 @@ public class Player implements Serializable {
     public List<Move> getAllLegalMoves() {
         return allLegalMoves;
     }
-
-    public void setAllLegalMoves(List<Move> allLegalMoves) {
-        this.allLegalMoves = allLegalMoves;
-    }
-
 
     static Player getOpponent(Game game){
         if(game.currentPlayer.isWhite){

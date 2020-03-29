@@ -1,7 +1,7 @@
 package Checkers;
 
 import cz.gyarab.util.light.LightColor;
-
+// I use this enum just to get colors
 public enum Color{
     WHITE(LightColor.CHESSBOARD_WHITE), BLACK(LightColor.CHESSBOARD_BLACK);
     private final LightColor color;

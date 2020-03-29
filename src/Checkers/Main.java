@@ -119,6 +119,7 @@ public class Main {
                    gameTimeMatrix.showWindow();
                    playerVsAI = true;
                }else if(event.getRow()==0){
+                   System.out.println("!!! Click anywhere on the board to start the AI move !!!");
                    gameTimeMatrix.showWindow();
                    AIVsAI = true;
                }

@@ -2,9 +2,9 @@ package Checkers;
 
 import cz.gyarab.util.light.LightColor;
 
-import java.io.Serializable;
+import java.io.*;
 
-class Board implements Serializable {
+public class Board implements Serializable {
     Spot[][] board;
     private int width;
     private int height;
@@ -28,7 +28,16 @@ class Board implements Serializable {
         return height;
     }
     LightColor getColor(int x, int y){
-        return getSpot(x,y).getPieceColor();
+        Piece piece = getSpot(x,y).getPiece();
+        if(piece==null){
+            return null;
+        }else {
+            if(piece.isWhite()){
+                return LightColor.CHESSBOARD_WHITE;
+            }else {
+                return LightColor.CHESSBOARD_BLACK;
+            }
+        }
     }
     private Spot getSpot(int x, int y){
         return board[x][y];
@@ -56,16 +65,16 @@ class Board implements Serializable {
     public void printOut() {
         StringBuilder charBoard = new StringBuilder();
 
-        for (int i = 0; i <8; i++) {
+        for (int i = 7; i >= 0; i--) {
             charBoard.append(i+1).append(" ");
-            for (int j = 0; j <8; j++) {
+            for (int j = 0; j < 8; j++) {
 
                 if (board[j][i].piece != null) {
-                    if (board[j][i].piece.getColor() == Color.WHITE.getColor()){
-                        char piece = board[j][i].piece.isQueen() ? '\u26C1' : '\u26C0';
+                    if (board[j][i].piece.isWhite()){
+                        char piece = board[j][i].piece.isQueen() ? '\u26C3' : '\u26C2';
                         charBoard.append(piece);
                     } else {
-                        char piece = board[j][i].piece.isQueen() ? '\u26C3' : '\u26C2';
+                        char piece = board[j][i].piece.isQueen() ? '\u26C1' : '\u26C0';
                         charBoard.append(piece);
                     }
                 } else {
@@ -87,16 +96,11 @@ class Board implements Serializable {
         }
 
 
-
+        System.out.println("-----------------------");
         System.out.println(charBoard.toString());
     }
 
-
-
-
-
-
-
-
-
+    public Spot[][] getBoard() {
+        return board;
+    }
 }

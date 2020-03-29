@@ -31,6 +31,7 @@ public class Game implements Serializable {
     }
 
 
+
     public boolean isGameHasEnded() {
         return gameHasEnded;
     }
@@ -70,7 +71,12 @@ public class Game implements Serializable {
         return (Game) obj;
     }
 
+
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
+    }
+
+    public Board getBoard() {
+        return board;
     }
 }

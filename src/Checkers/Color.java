@@ -2,7 +2,7 @@ package Checkers;
 
 import cz.gyarab.util.light.LightColor;
 
-public enum Color {
+public enum Color{
     WHITE(LightColor.CHESSBOARD_WHITE), BLACK(LightColor.CHESSBOARD_BLACK);
     private final LightColor color;
 

@@ -2,7 +2,7 @@ package Checkers;
 
 import cz.gyarab.util.light.LightColor;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class Player implements Serializable {
         if(isWhite){
             for (int row = 0; row < this.numberOfPieces/4; row++) {
                 for (int column = row % 2; column < game.board.getWidth(); column += 2) {
-                    Piece piece = new Piece(column, row, LightColor.CHESSBOARD_WHITE);
+                    Piece piece = new Piece(column, row, true);
                     allPieces.add(piece);
                     game.board.addPieceToSpot(column,row,piece);
                 }
@@ -41,7 +41,7 @@ public class Player implements Serializable {
         }else {
             for (int row = game.board.getHeight() - 1; row >= game.board.getHeight() - numberOfPieces / 4; row--) {
                 for (int column = row % 2; column < game.board.getWidth(); column += 2) {
-                    Piece piece = new Piece(column, row, LightColor.CHESSBOARD_BLACK);
+                    Piece piece = new Piece(column, row, false);
                     allPieces.add(piece);
                     game.board.addPieceToSpot(column,row,piece);
                 }
@@ -117,6 +117,5 @@ public class Player implements Serializable {
 
         }
     }
-
 
 }

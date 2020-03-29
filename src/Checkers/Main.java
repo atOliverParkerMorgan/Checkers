@@ -1,6 +1,5 @@
 package Checkers;
 
-import AI.GameAndFollowUpMove;
 import AI.MiniMax;
 import cz.gyarab.util.light.*;
 
@@ -145,7 +144,6 @@ public class Main {
                 if (!game.isGameHasEnded()) {
                     updateBoard();
                     boardColors();
-                    game.board.printOut();
 
                     if (event.getCol() < 0) {
                         return;
@@ -214,8 +212,12 @@ public class Main {
 
     private static void moveAI(){
        // while (!game.currentPlayer.isWhite()) {
-        Move bestMove = miniMax.getBestMove(Game.copy(game));
-        //game.currentPlayer = game.getBlackPlayer();
+        System.out.println("Start");
+        //game.getBoard().printOut();
+        Game test = Game.copy(game);
+        Move bestMove = miniMax.getBestMove(test);
+        System.out.println("Player: "+test.currentPlayer);
+        game= test;
 
         move(bestMove, game, false);
 
@@ -295,8 +297,6 @@ public class Main {
         player.allLegalMoves = new ArrayList<>();
 
         for (Piece piece: player.getAllPieces()) {
-
-
             if(piece.isQueen()){
                 for (int i = 0; i < 4; i++) {
                     int addX;
@@ -455,6 +455,9 @@ public class Main {
             return;
         }
         movingPiece.setXY(move);
+        if(AI){
+            gameTimeMatrix.setBackground(move.xFrom, move.yFrom, LightColor.GREEN);
+        }
         if(move.hasTaken) {
             if(move.yFrom<move.yTo){
                 if(move.xFrom<move.xTo) {
@@ -501,6 +504,7 @@ public class Main {
             synchBoard(game);
             endTurn(true);
         }
+        //game.board.printOut();
 
 
     }

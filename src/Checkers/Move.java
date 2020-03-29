@@ -3,10 +3,10 @@ package Checkers;
 import java.io.Serializable;
 
 public final class Move implements Serializable {
-    int xFrom;
-    int yFrom;
-    int xTo;
-    int yTo;
+    public int xFrom;
+    public int yFrom;
+    public int xTo;
+    public int yTo;
     boolean hasTaken;
 
     Move(int xFrom, int yFrom, int xTo, int yTo, boolean hasTaken){

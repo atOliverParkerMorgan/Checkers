@@ -17,6 +17,8 @@ public final class MiniMax {
     }
 
     public Move getBestMove(final Game game) {
+        //System.out.println("Before start: ");
+        //game.getBoard().printOut();
         Game simulatingGame;
         Move bestMove = null;
         double currentValue;
@@ -27,33 +29,36 @@ public final class MiniMax {
         double highestSeenValue = Double.MIN_VALUE;
 
         double lowestSeenValues = Double.MAX_VALUE;
-        Player player =game.getCurrentPlayer();
+
 
         double alpha = Double.MIN_VALUE;
         double beta = Double.MAX_VALUE;
-        System.out.println("Before: "+game.getCurrentPlayer().isWhite());
 
-        for (Move move : player.getAllLegalMoves()) {
+
+        for (Move move : game.getCurrentPlayer().getAllLegalMoves()) {
+            System.out.println("OG Move xFrom: "+ move.xFrom+" Move yFrom: "+move.yFrom+" Move xTo: "+move.xTo+"Move yTo: "+move.yTo);
             simulatingGame = Game.copy(game);
-            currentValue = player.isWhite() ?
+            simulatingGame = Main.getGameAfterMove(move,simulatingGame);
+
+            currentValue = game.getCurrentPlayer().isWhite() ?
                     max(simulatingGame, this.searchDepth, alpha, beta) :
                     min(simulatingGame, this.searchDepth, alpha, beta);
 
             // white is max black is min
-            if(currentValue>highestSeenValue && player.isWhite()){
+            if(currentValue>highestSeenValue &&  game.getCurrentPlayer().isWhite()){
                 highestSeenValue = currentValue;
                 bestMove = move;
 
 
-            }else if(currentValue<lowestSeenValues && !player.isWhite()){
+            }else if(currentValue<lowestSeenValues && ! game.getCurrentPlayer().isWhite()){
                 lowestSeenValues = currentValue;
                 bestMove = move;
 
             }
 
         }
-        System.out.println("Start: "+player.isWhite());
-        System.out.println("After: "+game.getCurrentPlayer().isWhite());
+        //System.out.println("After start: ");
+        //game.getBoard().printOut();
         System.out.println("BestMove: "+lowestSeenValues);
         return bestMove;
     }
@@ -69,14 +74,17 @@ public final class MiniMax {
         double highestSeenValue = Double.MIN_VALUE;
         final Game original = Game.copy(game);
         original.setCurrentPlayer(original.getWhitePlayer());
-
+        //System.out.println("BEFORE WHITE: ");
+        //original.getBoard().printOut();
         for (final Move move : original.getCurrentPlayer().getAllLegalMoves()) {
             Game newGame = Main.getGameAfterMove(move, game);
+           // System.out.println("AFTER WHITE: ");
+           // newGame.getBoard().printOut();
             final double currentValue;
 
             if(newGame.getCurrentPlayer().isWhite()) {
                 currentValue = max(newGame, depth - 1, alpha, beta);
-                System.out.println("AGAIN");
+               // System.out.println("AGAIN");
             }else {
 
                 currentValue = min(newGame, depth - 1, alpha, beta);
@@ -105,11 +113,17 @@ public final class MiniMax {
             game.setCurrentPlayer(game.getBlackPlayer());
         }
 
+
+
         double lowestSeenValue = Double.MAX_VALUE;
         final Game original = Game.copy(game);
         //System.out.println("Should be Black: "+original.getCurrentPlayer().isWhite());
+       // System.out.println("BEFORE BLACK: ");
+       // original.getBoard().printOut();
         for (final Move move : original.getCurrentPlayer().getAllLegalMoves()) {
             Game newGame =  Main.getGameAfterMove(move, game);
+            //System.out.println("AFTER BLACK: ");
+           // newGame.getBoard().printOut();
             final double currentValue;
             if(newGame.getCurrentPlayer().isWhite()) {
                 currentValue = max(newGame, depth - 1, alpha, beta);
@@ -117,6 +131,7 @@ public final class MiniMax {
                 System.out.println("AGAIN");
                 currentValue = min(newGame, depth - 1, alpha, beta);
             }
+
 
 
             lowestSeenValue = Math.min(currentValue, lowestSeenValue);

@@ -15,14 +15,6 @@ class Spot implements Serializable {
         this.piece = null;
     }
 
-    LightColor getPieceColor(){
-        if(piece==null){
-            return null;
-        }else {
-            return piece.getColor();
-        }
-
-    }
 
     Piece getPiece() {
         return piece;

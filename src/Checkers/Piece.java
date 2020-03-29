@@ -7,15 +7,15 @@ import java.io.Serializable;
 public class Piece implements Serializable {
     private int x;
     private int y;
-    private LightColor color;
+    private boolean isWhite;
 
     private boolean isQueen;
 
-    Piece(int x, int y, LightColor color){
+    Piece(int x, int y, boolean isWhite){
         this.isQueen = false;
         this.x = x;
         this.y = y;
-        this.color = color;
+        this.isWhite = isWhite;
     }
 
     int getX() {
@@ -38,8 +38,8 @@ public class Piece implements Serializable {
         return isQueen;
     }
 
-    LightColor getColor() {
-        return color;
+    boolean isWhite() {
+        return isWhite;
     }
 
 

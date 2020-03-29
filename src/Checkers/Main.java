@@ -242,12 +242,14 @@ public class Main {
         }
     }
 
-     private static void endTurn(boolean switchPlayers){
+     private static void endTurn(boolean switchPlayers, boolean getLegalMoves){
         updateBoard(game);
         if(switchPlayers) {
             switchPlayers(game);
         }
-        getLegalMoves(game.currentPlayer.isWhite(), false, game);
+        if(getLegalMoves) {
+            getLegalMoves(game.currentPlayer.isWhite(), false, game);
+        }
 
         if(checkIfPlayerHasLost(game.currentPlayer)){
            if(game.currentPlayer.isWhite()){
@@ -456,7 +458,7 @@ public class Main {
 
         // Fixing Errors in miniMax
         if(movingPiece==null){
-            endTurn(true);
+            endTurn(true, true);
             return;
         }
 
@@ -492,7 +494,7 @@ public class Main {
             if (filteredLegalMoves.size() != 0) {
                 game.currentPlayer.allLegalMoves = filteredLegalMoves;
 
-                endTurn(false);
+                endTurn(false, false);
                 updateBoard(game);
                 if(!AI) {
                     game.UI_moves = filteredLegalMoves;
@@ -501,12 +503,12 @@ public class Main {
 
 
             } else {
-                endTurn(true);
+                endTurn(true, true);
 
             }
         }else {
             synchBoard(game);
-            endTurn(true);
+            endTurn(true ,true);
         }
         if(!AI||whereFrom){
             game.board.printOut();

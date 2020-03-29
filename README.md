@@ -15,4 +15,5 @@ the AI uses
 note the AI is very primitive the Evaluation only evaluates piece value
 ```
 
-### using [My school matrix library]( http://vyuka.gyarab.cz/kahoun/download/ArabTools/) 
+### using: 
+[My school matrix library]( http://vyuka.gyarab.cz/kahoun/download/ArabTools/) 

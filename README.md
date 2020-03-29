@@ -1,5 +1,5 @@
 # Checkers
-##included
+## included
 #
 * player vs player 
 * player vs AI

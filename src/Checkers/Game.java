@@ -23,8 +23,6 @@ public class Game implements Serializable {
         this.followUpMove = false;
         this.whitePlayer = new Player(true);
         this.blackPlayer = new Player(false);
-        whitePlayer.setOpponent(blackPlayer);
-        blackPlayer.setOpponent(whitePlayer);
         whitePlayer.initPieces(this);
         blackPlayer.initPieces(this);
 
@@ -50,26 +48,26 @@ public class Game implements Serializable {
     }
 
     // !!! This is not my code, copied from the internet !!!
-    public Game copy() {
+    public static Game copy(Object orig) {
+        Object obj = null;
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(this);
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            return (Game) ois.readObject();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+            // Write the object out to a byte array
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bos);
+            out.writeObject(orig);
+            out.flush();
+            out.close();
 
-    public void changeGameToCopy(Game game){
-        this.currentPlayer = game.currentPlayer;
-        this.blackPlayer = game.blackPlayer;
-        this.whitePlayer = game.whitePlayer;
-        this.board = game.board;
-        this.gameHasEnded = game.gameHasEnded;
+            // Make an input stream from the byte array and read
+            // a copy of the object back in.
+            ObjectInputStream in = new ObjectInputStream(
+                    new ByteArrayInputStream(bos.toByteArray()));
+            obj = in.readObject();
+        }
+        catch(IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return (Game) obj;
     }
 
     public void setCurrentPlayer(Player currentPlayer) {

@@ -11,12 +11,10 @@ public class Player implements Serializable {
     private boolean isWhite;
     private Color color;
     private final int numberOfPieces;
-    private Player Opponent;
     private List<Piece> allPieces;
      List<Move> allLegalMoves;
 
     Player(boolean isWhite){
-        this.Opponent = null;
         this.allLegalMoves = new ArrayList<>();
         this.isWhite = isWhite;
         if(isWhite){
@@ -79,13 +77,17 @@ public class Player implements Serializable {
         }
         return allLegalMovesOfPiece;
     }
-    void removePieceFromOpponent(int x, int y){
-        for (int i = 0; i < Opponent.allPieces.size(); i++) {
-            if(Opponent.allPieces.get(i).getX()==x && Opponent.allPieces.get(i).getY()==y){
-                Opponent.allPieces.remove(Opponent.allPieces.get(i));
-                return;
+    static void removePieceFromOpponent(int x, int y, Game game){
+            Player Opponent = Player.getOpponent(game);
+
+            for (int i = 0; i < Opponent.allPieces.size();
+            i++){
+                if (Opponent.allPieces.get(i).getX() == x && Opponent.allPieces.get(i).getY() == y) {
+                    Opponent.allPieces.remove(Opponent.allPieces.get(i));
+                    return;
+                }
             }
-        }
+
         System.out.println("X: "+x+" \nY: "+y+"\n Error not Found");
 
     }
@@ -97,13 +99,6 @@ public class Player implements Serializable {
         }
     }
 
-    void setOpponent(Player opponent) {
-        Opponent = opponent;
-    }
-
-    Player getOpponent(){
-        return Opponent;
-    }
 
     public List<Move> getAllLegalMoves() {
         return allLegalMoves;
@@ -113,7 +108,15 @@ public class Player implements Serializable {
         this.allLegalMoves = allLegalMoves;
     }
 
-    //public void setAllLegalMoves(List<Move> allLegalMoves) {
-    //    this.allLegalMoves = allLegalMoves;
-    //}
+
+    static Player getOpponent(Game game){
+        if(game.currentPlayer.isWhite){
+           return game.blackPlayer;
+        }else {
+           return game.whitePlayer;
+
+        }
+    }
+
+
 }

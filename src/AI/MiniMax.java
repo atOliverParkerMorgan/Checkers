@@ -27,13 +27,14 @@ public final class MiniMax {
         double highestSeenValue = Double.MIN_VALUE;
 
         double lowestSeenValues = Double.MAX_VALUE;
-        Player player = game.getCurrentPlayer();
+        Player player =game.getCurrentPlayer();
 
         double alpha = Double.MIN_VALUE;
         double beta = Double.MAX_VALUE;
+        System.out.println("Before: "+game.getCurrentPlayer().isWhite());
 
         for (Move move : player.getAllLegalMoves()) {
-            simulatingGame = game.copy();
+            simulatingGame = Game.copy(game);
             currentValue = player.isWhite() ?
                     max(simulatingGame, this.searchDepth, alpha, beta) :
                     min(simulatingGame, this.searchDepth, alpha, beta);
@@ -43,13 +44,17 @@ public final class MiniMax {
                 highestSeenValue = currentValue;
                 bestMove = move;
 
+
             }else if(currentValue<lowestSeenValues && !player.isWhite()){
                 lowestSeenValues = currentValue;
                 bestMove = move;
+
             }
 
         }
-
+        System.out.println("Start: "+player.isWhite());
+        System.out.println("After: "+game.getCurrentPlayer().isWhite());
+        System.out.println("BestMove: "+lowestSeenValues);
         return bestMove;
     }
 
@@ -57,25 +62,27 @@ public final class MiniMax {
         if (depth == 0 || game.isGameHasEnded()) {
             return Evaluation.Score(game);
         }
+        if(!game.getCurrentPlayer().isWhite()){
+            System.out.println("Error White");
+            game.setCurrentPlayer(game.getWhitePlayer());
+        }
         double highestSeenValue = Double.MIN_VALUE;
-        Game original = game.copy();
-        System.out.println(original.getCurrentPlayer().isWhite());
-        for (final Move move : original.getCurrentPlayer().getAllLegalMoves()) {
-            System.out.println(move);
-            GameAndFollowUpMove gameAndFollowUpMove = Main.getGameAfterMove(move);
-            Game newGame = gameAndFollowUpMove.game;
-            final double currentValue;
-            if(gameAndFollowUpMove.move!=null){
-                newGame.getCurrentPlayer().setAllLegalMoves(gameAndFollowUpMove.move);
-              //  Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),true, game);
-                currentValue = max(newGame, depth - 1, alpha, beta);
-            }
-           else {
-              //  newGame.setCurrentPlayer(newGame.getBlackPlayer());
-              //  newGame.getCurrentPlayer().setAllLegalMoves(Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(), false, game));
-                currentValue = min(newGame, depth - 1, alpha, beta);
+        final Game original = Game.copy(game);
+        original.setCurrentPlayer(original.getWhitePlayer());
 
+        for (final Move move : original.getCurrentPlayer().getAllLegalMoves()) {
+            Game newGame = Main.getGameAfterMove(move, game);
+            final double currentValue;
+
+            if(newGame.getCurrentPlayer().isWhite()) {
+                currentValue = max(newGame, depth - 1, alpha, beta);
+                System.out.println("AGAIN");
+            }else {
+
+                currentValue = min(newGame, depth - 1, alpha, beta);
             }
+
+
             highestSeenValue = Math.max(currentValue, highestSeenValue);
             alpha = Math.max(alpha, highestSeenValue);
 
@@ -93,28 +100,28 @@ public final class MiniMax {
         if (depth == 0 || game.isGameHasEnded()) {
             return Evaluation.Score(game);
         }
+        if(game.getCurrentPlayer().isWhite()){
+            System.out.println("Error Black");
+            game.setCurrentPlayer(game.getBlackPlayer());
+        }
 
         double lowestSeenValue = Double.MAX_VALUE;
-        Game original = game.copy();
-        System.out.println(original.getCurrentPlayer().isWhite());
+        final Game original = Game.copy(game);
+        //System.out.println("Should be Black: "+original.getCurrentPlayer().isWhite());
         for (final Move move : original.getCurrentPlayer().getAllLegalMoves()) {
-            GameAndFollowUpMove gameAndFollowUpMove = Main.getGameAfterMove(move);
-            Game newGame = gameAndFollowUpMove.game;
+            Game newGame =  Main.getGameAfterMove(move, game);
             final double currentValue;
-            if(gameAndFollowUpMove.move!=null){
-               newGame.getCurrentPlayer().setAllLegalMoves(gameAndFollowUpMove.move);
-               // Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),true, game);
+            if(newGame.getCurrentPlayer().isWhite()) {
+                currentValue = max(newGame, depth - 1, alpha, beta);
+            }else {
+                System.out.println("AGAIN");
                 currentValue = min(newGame, depth - 1, alpha, beta);
             }
-            else {
-               // newGame.setCurrentPlayer(newGame.getWhitePlayer());
-               // newGame.getCurrentPlayer().setAllLegalMoves(Main.getLegalMoves(newGame.getCurrentPlayer().isWhite(),false, game));
 
-                currentValue = max(newGame, depth - 1, alpha, beta);
-            }
 
             lowestSeenValue = Math.min(currentValue, lowestSeenValue);
             beta = Math.min(beta, lowestSeenValue);
+
             if (beta <= alpha) {
                 break;
             }
@@ -122,42 +129,6 @@ public final class MiniMax {
         }
         return lowestSeenValue;
     }
-
-
-
-//private List<Game> getAllEndingMoves(Game game, List<Move> followUpMoves){
-//   returnEndOfMoveTree(game, followUpMoves);
-//   List<Game> filteredGames = new ArrayList<>();
-
-//    for (List<Move> moveList : allMovesJumpedOver) {
-//        if(moveList!=null){
-//            filteredGames.add(gameTreeSaver.savedGame);
-//        }
-//    }
-
-//    return filteredGames;
-
-//}
-
-//private Move returnEndOfMoveTree(Game game, List<Move> followUpMove){
-//    for (Move move:followUpMove) {
-
-//        Game simulatingGame = game.copy();
-//        List<Move> newFollowUpMoves = Main.move(move, simulatingGame);
-//        if (newFollowUpMoves != null) {
-//            returnEndOfMoveTree(simulatingGame, newFollowUpMoves);
-//        } else {
-//            allMovesJumpedOver.add(moveAddedAfterJumpedOver);
-//            moveAddedAfterJumpedOver = new ArrayList<>();
-//            return move;
-//        }
-//    }
-
-
-//    return null;
-
-
-//}
 
 
 }

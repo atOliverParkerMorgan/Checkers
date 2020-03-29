@@ -15,7 +15,7 @@ import java.util.List;
 public class Main {
 
     private boolean playerVsPlayer = false;
-    private static MiniMax miniMax = new MiniMax(2);
+    private static MiniMax miniMax = new MiniMax(1);
     private boolean playerVsAI = false;
     private boolean AIVsAI = false;
 
@@ -145,6 +145,7 @@ public class Main {
                 if (!game.isGameHasEnded()) {
                     updateBoard();
                     boardColors();
+                    game.board.printOut();
 
                     if (event.getCol() < 0) {
                         return;
@@ -154,28 +155,17 @@ public class Main {
                     }
                     LightColor lc = game.board.getColor(event.getCol(), event.getRow());
 
-
                     if (lc == null) {
 
                         for (int i = 0; i < game.UI_moves.size(); i++) {
 
                             if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
                                 game.UI_moves.get(i).setFromPosition(game.lastMove);
-                                game.currentPlayer.allLegalMoves = move(game.UI_moves.get(i), game);
-                                if (null != game.currentPlayer.allLegalMoves) {
-                                    if (game.currentPlayer.allLegalMoves.size() != 0) {
-                                        updateBoard();
-                                        showHint(event.getRow(), event.getCol(), true);
-                                    } else {
-                                        endTurn();
-                                    }
-                                } else {
-                                    endTurn();
-                                }
+                                move(game.UI_moves.get(i), game, false);
                             }
                         }
                     } else {
-                        showHint(event.getRow(), event.getCol(), false);
+                        showHint(event.getCol(), event.getRow());
                     }
                 }
             }else if(playerVsAI){
@@ -201,24 +191,18 @@ public class Main {
 
                                 if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
                                     game.UI_moves.get(i).setFromPosition(game.lastMove);
-                                    game.whitePlayer.allLegalMoves = move(game.UI_moves.get(i), game);
-                                    if (null != game.whitePlayer.allLegalMoves) {
-                                        if (game.whitePlayer.allLegalMoves.size() != 0) {
-                                            updateBoard();
-                                            showHint(event.getRow(), event.getCol(), true);
-                                        } else {
-                                            endTurn();
-                                            moveAI();
-                                        }
-                                    } else {
-                                        endTurn();
+                                    move(game.UI_moves.get(i), game, false);
+                                    if(!game.currentPlayer.isWhite()){
                                         moveAI();
                                     }
+
                                 }
                             }
                         } else {
-                            showHint(event.getRow(), event.getCol(), false);
+                            showHint(event.getCol(), event.getRow());
                         }
+
+
                     }
                 }
 
@@ -229,8 +213,12 @@ public class Main {
     }
 
     private static void moveAI(){
-        List<Move> followUpMoves = move(miniMax.getBestMove(game),game);
-        endTurn();
+       // while (!game.currentPlayer.isWhite()) {
+        Move bestMove = miniMax.getBestMove(Game.copy(game));
+        //game.currentPlayer = game.getBlackPlayer();
+
+        move(bestMove, game, false);
+
     }
 
     private static void switchPlayers(Game game) {
@@ -242,9 +230,11 @@ public class Main {
         }
     }
 
-     private static void endTurn(){
+     private static void endTurn(boolean switchPlayers){
         updateBoard();
-        switchPlayers(game);
+        if(switchPlayers) {
+            switchPlayers(game);
+        }
         getLegalMoves(game.currentPlayer.isWhite(), false, game);
 
         if(checkIfPlayerHasLost(game.currentPlayer)){
@@ -253,7 +243,6 @@ public class Main {
            }else {
                System.out.println("WHITE HAS WON");
            }
-
         }
 
         game.UI_moves = new ArrayList<>();
@@ -278,10 +267,9 @@ public class Main {
 
     }
 
-    private static void showHint(int eventRow, int eventCol, boolean followUp){
-        if(!followUp) {
-            game.UI_moves = new ArrayList<>();
-        }
+    private static void showHint(int eventCol, int eventRow){
+
+        game.UI_moves = new ArrayList<>();
 
         for (Move move : game.currentPlayer.allLegalMoves) {
             if (move.yFrom == eventRow && move.xFrom == eventCol) {
@@ -370,7 +358,7 @@ public class Main {
                             }
                         } else {
                             if (piece.getX() + 2 <= 7 && 2 * yDir + piece.getY() <= 7 && 2 * yDir + piece.getY() >= 0) {
-                                if (game.board.getColor(piece.getX() + 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
+                                if (game.board.getColor(piece.getX() + 1, piece.getY() + yDir).equals(Player.getOpponent(game).getColor().getColor()) &&
                                         game.board.isOff(piece.getX() + 2, piece.getY() + 2 * yDir)) {
                                     player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() + 2, piece.getY() + 2 * yDir, true));
 
@@ -387,7 +375,7 @@ public class Main {
                         } else {
 
                             if (piece.getX() - 2 >= 0 && 2 * yDir + piece.getY() <= 7 && 2 * yDir + piece.getY() >= 0) {
-                                if (game.board.getColor(piece.getX() - 1, piece.getY() + yDir).equals(player.getOpponent().getColor().getColor()) &&
+                                if (game.board.getColor(piece.getX() - 1, piece.getY() + yDir).equals(Player.getOpponent(game).getColor().getColor()) &&
                                         game.board.isOff(piece.getX() - 2, piece.getY() + 2 * yDir)) {
                                     player.allLegalMoves.add(new Move(piece.getX(), piece.getY(), piece.getX() - 2, piece.getY() + 2 * yDir, true));
 
@@ -433,16 +421,14 @@ public class Main {
     }
 
 
-    public static GameAndFollowUpMove getGameAfterMove(Move move){
-       Game gameCopy = game.copy();
-       GameAndFollowUpMove gameAndFollowUpMove = new GameAndFollowUpMove(gameCopy, move(move, gameCopy));
-       synchBoard();
-       updateBoard();
-       checkIfQueen();
-       return gameAndFollowUpMove;
+    public static Game getGameAfterMove(Move move, Game game){
+       Game gameCopy = Game.copy(game);
+       move(move, gameCopy, true);
+
+       return gameCopy;
     }
 
-    private static void synchBoard(){
+    private static void synchBoard(Game game){
         game.board.nullOutPieces();
 
         for(Piece piece: game.whitePlayer.getAllPieces()){
@@ -455,41 +441,67 @@ public class Main {
     }
 
 
-    private static List<Move> move(Move move, Game game) {
+    private static void move(Move move, Game game, boolean AI) {
+
         Piece movingPiece = game.currentPlayer.getPiece(move.xFrom, move.yFrom);
+
+        if(movingPiece==null){
+
+            gameTimeMatrix.setBackground(move.xFrom,move.yFrom, LightColor.RED);
+            System.out.println("Error, the piece wasn't found");
+            System.out.println("xFrom: "+ move.xFrom);
+            System.out.println("yFrom: "+ move.yFrom);
+            endTurn(true);
+            return;
+        }
         movingPiece.setXY(move);
         if(move.hasTaken) {
             if(move.yFrom<move.yTo){
                 if(move.xFrom<move.xTo) {
-                    game.currentPlayer.removePieceFromOpponent(move.xTo - 1, move.yTo - 1);
+                    Player.removePieceFromOpponent(move.xTo - 1, move.yTo - 1, game);
                 }else{
-                    game.currentPlayer.removePieceFromOpponent(move.xTo + 1, move.yTo - 1);
+                    Player.removePieceFromOpponent(move.xTo + 1, move.yTo - 1, game);
                 }
             }else {
                 if(move.xFrom<move.xTo) {
-                    game.currentPlayer.removePieceFromOpponent(move.xTo - 1, move.yTo + 1);
+                    Player.removePieceFromOpponent(move.xTo - 1, move.yTo + 1, game);
                 }else{
-                    game.currentPlayer.removePieceFromOpponent(move.xTo + 1, move.yTo + 1);
+                    Player.removePieceFromOpponent(move.xTo + 1, move.yTo + 1, game);
                 }
 
             }
-            synchBoard();
+            synchBoard(game);
             updateBoard();
             getLegalMoves(game.currentPlayer.isWhite(), true, game);
             List<Move> legalMovesOfPiece = game.currentPlayer.getLegalMovesOfPiece(movingPiece);
             List<Move> filteredLegalMoves = new ArrayList<>();
 
             for (Move value : legalMovesOfPiece) {
-
                 if (value.hasTaken && move.xFrom!=value.xFrom && move.yTo!=value.yTo) {
                     filteredLegalMoves.add(value);
                 }
             }
-            legalMovesOfPiece = filteredLegalMoves;
-            return legalMovesOfPiece;
+
+            if (filteredLegalMoves.size() != 0) {
+                game.currentPlayer.allLegalMoves = filteredLegalMoves;
+
+                endTurn(false);
+                updateBoard();
+                if(!AI) {
+                    game.UI_moves = filteredLegalMoves;
+                    showHint(move.xTo, move.yTo);
+                }
+
+
+            } else {
+                endTurn(true);
+
+            }
+        }else {
+            synchBoard(game);
+            endTurn(true);
         }
-        synchBoard();
-        return null;
+
 
     }
 

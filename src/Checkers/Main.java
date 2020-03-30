@@ -228,7 +228,7 @@ public class Main {
            if(whereFrom) {
                game = test;
            }
-           move(bestMove, game, false ,whereFrom);
+           move(bestMove, game, true ,whereFrom);
        }
 
 
@@ -243,8 +243,9 @@ public class Main {
         }
     }
 
-     private static void endTurn(boolean switchPlayers, boolean getLegalMoves){
+     private static void endTurn(boolean switchPlayers, boolean getLegalMoves, Game game){
         updateBoard(game);
+        synchBoard(game);
         if(switchPlayers) {
             switchPlayers(game);
         }
@@ -262,10 +263,10 @@ public class Main {
 
         game.UI_moves = new ArrayList<>();
         game.followUpMove = false;
-        checkIfQueen();
+        checkIfQueen(game);
     }
 
-    private static void checkIfQueen(){
+    private static void checkIfQueen(Game game){
         for (int i = 0; i < game.board.getWidth(); i++) {
             if(game.board.isOn(i,game.board.getHeight()-1)){
                 if(game.board.getColor(i,game.board.getHeight()-1)==Color.WHITE.getColor()) {
@@ -456,13 +457,6 @@ public class Main {
 
     private static void move(Move move, Game game, boolean AI, boolean whereFrom) {
         Piece movingPiece = game.currentPlayer.getPiece(move.xFrom, move.yFrom);
-
-        // Fixing Errors in miniMax
-        if(movingPiece==null){
-            endTurn(true, true);
-            return;
-        }
-
         movingPiece.setXY(move);
         if(whereFrom){gameTimeMatrix.setBackground(move.xFrom, move.yFrom, LightColor.GREEN); }
         if(move.hasTaken) {
@@ -495,7 +489,7 @@ public class Main {
             if (filteredLegalMoves.size() != 0) {
                 game.currentPlayer.allLegalMoves = filteredLegalMoves;
 
-                endTurn(false, false);
+                endTurn(false, false, game);
                 updateBoard(game);
                 if(!AI) {
                     game.UI_moves = filteredLegalMoves;
@@ -504,12 +498,12 @@ public class Main {
 
 
             } else {
-                endTurn(true, true);
+                endTurn(true, true, game);
 
             }
         }else {
             synchBoard(game);
-            endTurn(true ,true);
+            endTurn(true ,true, game);
         }
         if(!AI||whereFrom){
             game.board.printOut();

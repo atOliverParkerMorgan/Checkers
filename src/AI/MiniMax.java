@@ -20,7 +20,7 @@ public final class MiniMax {
         Move bestMove = null;
         double currentValue;
 
-        int numMoves = 100 /game.getCurrentPlayer().getAllLegalMoves().size();
+        int numMoves = 100 / game.getCurrentPlayer().getAllLegalMoves().size();
         int all = 0;
         // these values have to be changed during the first miniMax loop
         double highestSeenValue = Integer.MIN_VALUE;

@@ -6,7 +6,7 @@ import Checkers.Piece;
 class Evaluation {
     private final static int PieceBias = 10;
     private final static int QueenBias = 40;
-    private final static int EndOfBoardPosition = 5;
+    private final static int EndOfBoardPosition = 2;
 
 
     static int Score(Game game){

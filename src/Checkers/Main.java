@@ -14,7 +14,7 @@ import java.util.List;
 public class Main {
 
     private boolean playerVsPlayer = false;
-    private static MiniMax miniMax = new MiniMax(6); // 4 is optimal in my opinion
+    private static MiniMax miniMax = new MiniMax(6); // 6 is optimal in my opinion
     private boolean playerVsAI = false;
     private boolean AIVsAI = false;
 
@@ -191,9 +191,8 @@ public class Main {
                                 if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
                                     game.UI_moves.get(i).setFromPosition(game.lastMove);
                                     move(game.UI_moves.get(i), game, false, false);
-
+                                    moveAI(false, true);
                                     // AI move
-                                    moveAI(game.blackPlayer, true);
                                 }
                             }
                         } else {
@@ -206,13 +205,13 @@ public class Main {
 
             }else if(AIVsAI) {
                 if(game.currentPlayer.isWhite()) {
-                    moveAI(game.whitePlayer, false);
+                    moveAI(true, false);
                     System.out.println("-- WHITE MOVE --");
                     game.board.printOut();
                     gameTimeMatrix.getInteractiveLightPanel().unselect();
                 }else {
 
-                    moveAI(game.blackPlayer, false);
+                    moveAI(false, false);
                     System.out.println("-- BLACK MOVE --");
                     game.board.printOut();
                     gameTimeMatrix.getInteractiveLightPanel().unselect();
@@ -224,8 +223,8 @@ public class Main {
         });
     }
 
-    private static void moveAI(Player player, boolean whereFrom){
-       while (game.currentPlayer == player) {
+    private static void moveAI(boolean isWhite, boolean whereFrom){
+       while (game.currentPlayer.isWhite() == isWhite) {
            Game test = Game.copy(game);
            Move bestMove = miniMax.getBestMove(test, true);
            if(whereFrom) {

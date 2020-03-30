@@ -14,7 +14,7 @@ import java.util.List;
 public class Main {
 
     private boolean playerVsPlayer = false;
-    private static MiniMax miniMax = new MiniMax(4); //optimal in my opinion
+    private static MiniMax miniMax = new MiniMax(6); // 4 is optimal in my opinion
     private boolean playerVsAI = false;
     private boolean AIVsAI = false;
 
@@ -207,12 +207,17 @@ public class Main {
             }else if(AIVsAI) {
                 if(game.currentPlayer.isWhite()) {
                     moveAI(game.whitePlayer, false);
+                    System.out.println("-- WHITE MOVE --");
+                    game.board.printOut();
                     gameTimeMatrix.getInteractiveLightPanel().unselect();
                 }else {
 
                     moveAI(game.blackPlayer, false);
+                    System.out.println("-- BLACK MOVE --");
+                    game.board.printOut();
                     gameTimeMatrix.getInteractiveLightPanel().unselect();
                 }
+
 
 
             }

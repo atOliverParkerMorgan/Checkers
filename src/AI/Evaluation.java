@@ -18,6 +18,9 @@ class Evaluation {
             }else {
                 whiteScore+=PieceBias;
             }
+            if(piece.getX()==0||piece.getX()==7){
+                whiteScore+=EndOfBoardPosition;
+            }
 
         }
 
@@ -26,6 +29,9 @@ class Evaluation {
                 blackScore+=QueenBias;
             }else {
                 blackScore+=PieceBias;
+            }
+            if(piece.getX()==0||piece.getX()==7){
+                blackScore+=EndOfBoardPosition;
             }
 
         }

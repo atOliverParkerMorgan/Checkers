@@ -16,7 +16,7 @@ public class Piece implements Serializable {
         this.isWhite = isWhite;
     }
 
-    int getX() {
+    public int getX() {
         return x;
     }
 

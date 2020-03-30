@@ -36,7 +36,7 @@ public final class MiniMax {
 
             simulatingGame = Main.getGameAfterMove(move,game);
 
-            currentValue = game.getCurrentPlayer().isWhite() ?
+            currentValue = simulatingGame.getCurrentPlayer().isWhite() ?
                     max(simulatingGame, this.searchDepth, alpha, beta) :
                     min(simulatingGame, this.searchDepth, alpha, beta);
 

@@ -457,6 +457,11 @@ public class Main {
 
     private static void move(Move move, Game game, boolean AI, boolean whereFrom) {
         Piece movingPiece = game.currentPlayer.getPiece(move.xFrom, move.yFrom);
+        if(movingPiece==null){
+
+            endTurn(true,true,game);
+            return;
+        }
         movingPiece.setXY(move);
         if(whereFrom){gameTimeMatrix.setBackground(move.xFrom, move.yFrom, LightColor.GREEN); }
         if(move.hasTaken) {

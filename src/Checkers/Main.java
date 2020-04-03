@@ -14,7 +14,7 @@ import java.util.List;
 public class Main {
 
     private boolean playerVsPlayer = false;
-    private static MiniMax miniMax = new MiniMax(1); // 6 is optimal in my opinion
+    private static MiniMax miniMax = new MiniMax(6); // 6 is optimal in my opinion
     private boolean playerVsAI = false;
     private boolean AIVsAI = false;
 
@@ -266,7 +266,9 @@ public class Main {
            }else {
                System.out.println("WHITE HAS WON");
            }
-           while (true){}
+           if(game==Main.game) {
+               while (true) {}
+           }
         }
 
         game.UI_moves = new ArrayList<>();

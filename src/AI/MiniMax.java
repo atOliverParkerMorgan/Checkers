@@ -65,7 +65,7 @@ public final class MiniMax {
 
     private double max(Game game, final int depth, double alpha, double beta) {
         if (depth == 0 || game.isGameHasEnded()) {
-            return Evaluation.Score(game);
+            return Evaluation.Score(game, depth);
         }
         double highestSeenValue = Double.MIN_VALUE;
         final Game original = Game.copy(game);
@@ -98,7 +98,7 @@ public final class MiniMax {
 
     private double min(Game game, final int depth, double alpha, double beta) {
         if (depth == 0 || game.isGameHasEnded()) {
-            return Evaluation.Score(game);
+            return Evaluation.Score(game, depth);
         }
 
         double lowestSeenValue = Double.MAX_VALUE;

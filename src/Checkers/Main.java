@@ -21,6 +21,8 @@ public class Main {
     private  static Game game;
     private Matrix menuMatrix = Matrix.createMatrix(3, 3);
     private static Matrix gameTimeMatrix = Matrix.createMatrix(8,8);
+    private int lastRow = 0;
+    private int lastCol = 0;
     private Main() {
         gameTimeMatrix = Matrix.createMatrix(8, 8);
         gameTimeMatrix.setLightPanelFactory(new LightPanelFactory() {
@@ -136,7 +138,6 @@ public class Main {
         updateBoard(game);
         getLegalMoves(game.currentPlayer.isWhite(),false, game);
 
-
         gameTimeMatrix.getInteractiveLightPanel().setUserSelectionMode(
                 InteractiveLightPanel.UserSelectionMode.PRESS);
         gameTimeMatrix.getInteractiveLightPanel().setSelectionVisible(true);
@@ -158,7 +159,7 @@ public class Main {
 
                         for (int i = 0; i < game.UI_moves.size(); i++) {
 
-                            if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
+                            if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol() && game.UI_moves.get(i).yFrom == lastRow  && game.UI_moves.get(i).xFrom == lastCol) {
                                 game.UI_moves.get(i).setFromPosition(game.lastMove);
                                 move(game.UI_moves.get(i), game, false, false);
                             }
@@ -166,6 +167,8 @@ public class Main {
                     } else {
                         showHint(event.getCol(), event.getRow());
                     }
+                    lastRow = event.getRow();
+                    lastCol = event.getCol();
                 }
             }else if(playerVsAI){
                 if (!game.isGameHasEnded()) {
@@ -188,7 +191,7 @@ public class Main {
 
                             for (int i = 0; i < game.UI_moves.size(); i++) {
 
-                                if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol()) {
+                                if (game.UI_moves.get(i).yTo == event.getRow() && game.UI_moves.get(i).xTo == event.getCol() && game.UI_moves.get(i).yFrom == lastRow  && game.UI_moves.get(i).xFrom == lastCol) {
                                     game.UI_moves.get(i).setFromPosition(game.lastMove);
                                     move(game.UI_moves.get(i), game, false, false);
                                     moveAI(false, true);
@@ -198,6 +201,8 @@ public class Main {
                         } else {
                             showHint(event.getCol(), event.getRow());
                         }
+                        lastRow = event.getRow();
+                        lastCol = event.getCol();
 
 
                     }
